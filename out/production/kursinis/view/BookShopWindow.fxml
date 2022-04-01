@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+
+<TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fxControllers.BookShopWindow">
+    <tabs>
+        <Tab fx:id="myAccount" text="My account">
+            <content>
+                <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="450.0" prefWidth="800.0">
+                    <children>
+                  <TabPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="420.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE">
+                    <tabs>
+                      <Tab text="Account">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                          <Button fx:id="logOutButton" layoutX="728.0" layoutY="351.0" mnemonicParsing="false" onAction="#logOut" text="Log out" />
+                                 </children>
+                              </AnchorPane>
+                        </content>
+                      </Tab>
+                      <Tab text="Manage carts">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        </content>
+                      </Tab>
+                    </tabs>
+                  </TabPane>
+                    </children></AnchorPane>
+            </content>
+        </Tab>
+        <Tab fx:id="bookShop" onSelectionChanged="#fillTablesByUser" text="Book shop">
+            <content>
+                <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="450.0" prefWidth="800.0">
+                    <children>
+                        <HBox fx:id="searchBar" layoutY="1.0" prefHeight="26.0" prefWidth="600.0">
+                            <children>
+                                <TextField fx:id="searchBookF" onAction="#searchBook" prefHeight="25.0" prefWidth="150.0" promptText="Book title" />
+                                <DatePicker fx:id="searchFromDate" onAction="#searchBook" prefHeight="25.0" prefWidth="150.0" promptText="Publish from" />
+                                <DatePicker fx:id="searchToDate" onAction="#searchBook" prefHeight="25.0" prefWidth="150.0" promptText="Publish to" />
+                                <TextField fx:id="searchAuthorsF" onAction="#searchBook" prefHeight="25.0" prefWidth="150.0" promptText="Authors" />
+                            </children>
+                        </HBox>
+                        <ListView fx:id="allBooksClient" layoutY="51.0" onMouseClicked="#viewBookInfo" prefHeight="370.0" prefWidth="200.0" />
+                        <TextField fx:id="bookTitleF" editable="false" layoutX="400.0" layoutY="27.0" prefHeight="25.0" prefWidth="200.0" />
+                        <TextField fx:id="bookAuthorsF" editable="false" layoutX="599.0" layoutY="27.0" prefHeight="25.0" prefWidth="200.0" />
+                        <DatePicker fx:id="bookPublishDateF" editable="false" layoutX="400.0" layoutY="53.0" prefHeight="25.0" prefWidth="150.0" />
+                        <TextField fx:id="bookPageNumF" editable="false" layoutX="550.0" layoutY="53.0" prefHeight="25.0" prefWidth="100.0" />
+                        <TextField fx:id="bookInStockF" editable="false" layoutX="649.0" layoutY="53.0" prefHeight="25.0" prefWidth="50.0" />
+                        <TextField fx:id="bookPriceF" editable="false" layoutX="700.0" layoutY="53.0" prefHeight="25.0" prefWidth="100.0" />
+                        <TextArea fx:id="bookDescriptionF" editable="false" layoutX="400.0" layoutY="79.0" prefHeight="200.0" prefWidth="400.0" wrapText="true" />
+                  <Button layoutX="705.0" layoutY="1.0" mnemonicParsing="false" onAction="#createCart" prefHeight="25.0" prefWidth="95.0" text="Add to cart" />
+                  <ListView fx:id="currentOrderList" layoutX="200.0" layoutY="51.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="370.0" prefWidth="200.0" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" layoutY="27.0" prefHeight="25.0" prefWidth="200.0" text="Book list" />
+                  <Label alignment="CENTER" layoutX="200.0" layoutY="27.0" prefHeight="25.0" prefWidth="200.0" text="Cart list" />
+                    </children>
+                </AnchorPane>
+            </content>
+        </Tab>
+        <Tab fx:id="employeeTools" onSelectionChanged="#loadBooks" text="Employee tools">
+            <content>
+                <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="450.0" prefWidth="800.0">
+                    <children>
+                  <TabPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="420.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE">
+                    <tabs>
+                      <Tab text="Manage books">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                          <ListView fx:id="employeeBookList" onMouseClicked="#refresh" prefHeight="390.0" prefWidth="300.0">
+                                              <contextMenu>
+                                                  <ContextMenu>
+                                                      <items>
+                                                          <MenuItem mnemonicParsing="false" onAction="#editBook" text="Edit book" />
+                                                          <MenuItem mnemonicParsing="false" onAction="#deleteBook" text="Delete book" />
+                                                      </items>
+                                                  </ContextMenu>
+                                              </contextMenu>
+                                          </ListView>
+                                          <AnchorPane layoutX="300.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="390.0" prefWidth="500.0">
+                                              <children>
+                                                  <TextField fx:id="createBookTitle" prefHeight="25.0" prefWidth="250.0" promptText="Enter book title" />
+                                                  <TextField fx:id="createBookAuthors" layoutX="250.0" prefHeight="25.0" prefWidth="250.0" promptText="Enter authors" />
+                                                  <DatePicker fx:id="createBookPublishDate" editable="false" layoutY="25.0" prefHeight="25.0" prefWidth="200.0" promptText="Enter publish date" />
+                                                  <TextField fx:id="createBookPageNum" layoutX="200.0" layoutY="25.0" prefHeight="26.0" prefWidth="100.0" promptText="Enter page number" />
+                                                  <TextField fx:id="createBookInStock" layoutX="300.0" layoutY="25.0" prefHeight="25.0" prefWidth="100.0" promptText="In stock" />
+                                                  <TextField fx:id="createBookPrice" layoutX="400.0" layoutY="25.0" prefHeight="25.0" prefWidth="100.0" promptText="Price" />
+                                                  <Button fx:id="addBookButton" layoutX="50.0" layoutY="350.0" mnemonicParsing="false" onAction="#createBook" prefHeight="25.0" prefWidth="150.0" text="Add book" />
+                                                  <Button fx:id="updateBookButton" layoutX="300.0" layoutY="350.0" mnemonicParsing="false" onAction="#updateBook" prefHeight="25.0" prefWidth="150.0" text="Update book info" />
+                                                  <TextArea fx:id="createBookDescription" layoutX="50.0" layoutY="50.0" prefHeight="250.0" prefWidth="400.0" promptText="Enter book description" wrapText="true" />
+                                              </children>
+                                          </AnchorPane>
+                                 </children>
+                              </AnchorPane>
+                        </content>
+                      </Tab>
+                      <Tab text="Untitled Tab 2">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        </content>
+                      </Tab>
+                    </tabs>
+                  </TabPane>
+                    </children>
+                </AnchorPane>
+            </content>
+        </Tab>
+        <Tab fx:id="adminTools" text="Admin tools">
+            <content>
+                <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="450.0" prefWidth="800.0">
+                    <children>
+                        <TabPane prefHeight="420.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE">
+                            <tabs>
+                                <Tab fx:id="manageUsersTool" onSelectionChanged="#loadUsers" text="Manage Users">
+                                    <content>
+                                        <TableView fx:id="usersTable" prefHeight="420.0" prefWidth="800.0">
+                                            <columns>
+                                                <TableColumn fx:id="colId" editable="false" prefWidth="30.0" text="id" />
+                                                <TableColumn fx:id="colLogin" editable="false" prefWidth="75.0" text="login" />
+                                                <TableColumn fx:id="colDateCreated" editable="false" prefWidth="75.0" text="dateCreated" />
+                                                <TableColumn fx:id="colDateModified" editable="false" prefWidth="89.60003662109375" text="dateModified" />
+                                                <TableColumn fx:id="colPhoneNum" editable="false" prefWidth="98.39996337890625" text="phone number" />
+                                                <TableColumn fx:id="colRole" editable="false" prefWidth="81.60003662109375" text="role" />
+                                                <TableColumn fx:id="colName" editable="false" prefWidth="64.79998779296875" text="name" />
+                                                <TableColumn fx:id="colSurname" editable="false" prefWidth="85.5999755859375" text="surname" />
+                                                <TableColumn fx:id="colCompanyTitle" editable="false" prefWidth="112.800048828125" text="company title" />
+                                                <TableColumn fx:id="colAddress" editable="false" prefWidth="90.4000244140625" text="address" />
+                                                <TableColumn fx:id="actionsField" prefWidth="150.0" text="Actions" />
+                                            </columns>
+                                        </TableView>
+                                    </content>
+                                </Tab>
+                                <Tab text="Untitled Tab 2" />
+                            </tabs>
+                        </TabPane>
+                    </children></AnchorPane>
+            </content>
+        </Tab>
+    </tabs>
+</TabPane>
