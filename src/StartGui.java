@@ -11,7 +11,7 @@ public class StartGui extends Application{
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(StartGui.class.getResource("view/LoginWindow.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("Book Shop ");
+        stage.setTitle("Book Shop");
         stage.setScene(scene);
         stage.show();
     }
