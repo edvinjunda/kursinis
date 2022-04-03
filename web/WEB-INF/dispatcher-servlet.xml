@@ -13,14 +13,14 @@
     <bean id="UrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <props>
-                <prop key="/person">person</prop>
+                <prop key="/user">user</prop>
                 <prop key="/book">books</prop>
 
             </props>
         </property>
     </bean>
 
-    <bean name="person" class="webControllers.UserWebCtrl"/>
+    <bean name="user" class="webControllers.UserWebCtrl"/>
     <bean name="books" class="webControllers.BookWebCtrl"/>
 
 </beans>
