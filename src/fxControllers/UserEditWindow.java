@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import users.*;
@@ -34,14 +35,18 @@ public class UserEditWindow implements Initializable {
     private TextField editPhoneNumF;
     @FXML
     private TextField editSurnameF;
+    @FXML
+    public Button cancelButton;
+    @FXML
+    public Button saveEditedUser;
 
     User editedUser;
 
-    private int adminId;
+    /*private int adminId;
 
     public void setAdminId(int id){
         this.adminId=id;
-    }
+    }*/
 
     EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("BookShop");
     UserHibernateCtrl userHibernateCtrl = new UserHibernateCtrl(entityManagerFactory);
@@ -87,7 +92,11 @@ public class UserEditWindow implements Initializable {
     }
 
 
-    public void returnToBookShop(ActionEvent actionEvent) throws IOException {
+    public void cancelEditing(ActionEvent actionEvent) throws IOException {
+        Stage stage = (Stage) cancelButton.getScene().getWindow();
+        stage.close();
+    }
+    /*public void returnToBookShop(ActionEvent actionEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(BookShopWindow.class.getResource("../view/BookShopWindow.fxml"));
         Parent parent = fxmlLoader.load();
         BookShopWindow bookShopWindow = fxmlLoader.getController();
@@ -97,14 +106,14 @@ public class UserEditWindow implements Initializable {
         stage.setTitle("Book Shop");
         stage.setScene(scene);
         stage.show();
-    }
+    }*/
 
     public void saveAndReturnToBookShop() throws IOException {
 
         FXMLLoader fxmlLoader = new FXMLLoader(BookShopWindow.class.getResource("../view/BookShopWindow.fxml"));
         Parent parent = fxmlLoader.load();
         BookShopWindow bookShopWindow = fxmlLoader.getController();
-        bookShopWindow.setUserId(adminId);
+        //bookShopWindow.setUserId(adminId);
         Scene scene = new Scene(parent);
         Stage stage = (Stage) editPhoneNumF.getScene().getWindow();
         stage.setTitle("Book Shop");
@@ -114,8 +123,6 @@ public class UserEditWindow implements Initializable {
 
 
     public void updateUser(ActionEvent actionEvent) throws IOException {
-
-
         if (editLoginF.getText().isEmpty()) {
             alertMsg("Login field is empty!", "Enter login!");
         }
@@ -172,13 +179,10 @@ public class UserEditWindow implements Initializable {
                     editedUser.setSurname(editSurnameF.getText());
 
                     userHibernateCtrl.updateUser(editedUser);
-                    saveAndReturnToBookShop();
                 }
             }
 
             else if (editedUser.getRole() == Role.COMPANY) {
-                        /*editedUser.setLogin(editLoginF.getText());
-                        editedUser.setPhoneNum(editPhoneNumF.getText());*/
                 if (editCompanyTittleF.getText().isEmpty()) {
                     alertMsg("Company title field is empty!", "Enter company title!");
                 }
@@ -200,7 +204,6 @@ public class UserEditWindow implements Initializable {
                     editedUser.setAddress(editAddressF.getText());
 
                     userHibernateCtrl.updateUser(editedUser);
-                    saveAndReturnToBookShop();
                 }
 
             }
@@ -244,12 +247,12 @@ public class UserEditWindow implements Initializable {
                 editedUser.setAddress(editAddressF.getText());
 
                 userHibernateCtrl.updateUser(editedUser);
-                saveAndReturnToBookShop();
                 }
 
             }
-
         }
+        Stage stage = (Stage) saveEditedUser.getScene().getWindow();
+        stage.close();
     }
 
 

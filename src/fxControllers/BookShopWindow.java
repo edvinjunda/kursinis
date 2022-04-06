@@ -304,9 +304,9 @@ public class BookShopWindow implements Initializable {
                             User user=null;
                             UserTableParameters data = getTableView().getItems().get(getIndex());
 
-                            if(data.getRole()==Role.ADMIN.name()){}///////////////////////////////////////////////////////
+                            if(data.getRole().equals(Role.ADMIN.name())){}///////////////////////////////////////////////////////
 
-                            else if (data.getRole()==Role.COMPANY.name()){
+                            else if (data.getRole().equals(Role.COMPANY.name())){
                                 user=userHibernateCtrl.getCompanyById(data.getUserId());
                                 try {
                                     loadUserEditWindow(user);
@@ -392,9 +392,11 @@ public class BookShopWindow implements Initializable {
             Parent parent = fxmlLoader.load();
             UserEditWindow userEditWindow = fxmlLoader.getController();
             userEditWindow.SetFields(user);
-            userEditWindow.setAdminId(userId);
+            //userEditWindow.setAdminId(userId);
             Scene scene = new Scene(parent);
-            Stage stage = (Stage) searchAuthorsF.getScene().getWindow();
+            //Stage stage = (Stage) searchAuthorsF.getScene().getWindow();
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Edit user");
             stage.setScene(scene);
             stage.show();
@@ -481,7 +483,7 @@ public class BookShopWindow implements Initializable {
                     Integer.parseInt(createBookPageNum.getText()),
                     createBookAuthors.getText(),
                    Math.floor(100.0*Double.parseDouble(createBookPrice.getText()))/100.0,
-                    Integer.parseInt(createBookInStock.getText()));//,createBookAvailable.isSelected());
+                    Integer.parseInt(createBookInStock.getText()));
 
             bookHibernateCtrl.createBook(book);
             ClearCreateFields();
