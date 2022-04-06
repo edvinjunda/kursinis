@@ -185,7 +185,7 @@ public class BookShopWindow implements Initializable {
         bookInStockF.clear();
         bookPageNumF.clear();
         bookPriceF.clear();
-        bookPublishDateF.setValue(null);
+        bookPublishDateF.setValue(null);//
         bookTitleF.clear();
     }
 
@@ -323,20 +323,12 @@ public class BookShopWindow implements Initializable {
                                     e.printStackTrace();
                                 }
                             }
-
-                            /*try {
-                                loadUserEditWindow(user);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }*/
                         });
                     }
 
                     @Override
                     public void updateItem(Void item, boolean empty) {
                         super.updateItem(item, empty);
-                        //User user = userHibernateCtrl.getUserById(userId);
-
 
                         if (empty) //|| user.getRole()==Role.ADMIN)
                         {
@@ -344,8 +336,6 @@ public class BookShopWindow implements Initializable {
                         } else {    //cell.disabledProperty();
                             HBox pane = new HBox(deleteButton, editButton);
                             setGraphic(pane);
-                            //setGraphic(deleteButton);
-                            //setGraphic(editButton);
                         }
                     }
                 };

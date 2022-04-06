@@ -143,8 +143,6 @@ public class UserEditWindow implements Initializable {
             editedUser.setDateModified(LocalDate.now());
 
             if (editedUser.getRole() == Role.PERSON) {
-                        /*editedUser.setLogin(editLoginF.getText());
-                        editedUser.setPhoneNum(editPhoneNumF.getText());*/
                 if (editNameF.getText().isEmpty()) {
                     alertMsg("Name field is empty!", "Enter name!");
                 }
@@ -209,9 +207,6 @@ public class UserEditWindow implements Initializable {
 
 
             else if (editedUser.getRole() == Role.EMPLOYEE) {
-                        /*editedUser.setLogin(editLoginF.getText());
-                        editedUser.setPhoneNum(editPhoneNumF.getText());*/
-
                 if (editNameF.getText().isEmpty()) {
                     alertMsg("Name field is empty!", "Enter name!");
                 }
