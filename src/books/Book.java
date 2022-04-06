@@ -2,13 +2,13 @@ package books;
 
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -31,11 +31,11 @@ public class Book implements Serializable {
     /*@OneToMany(mappedBy = "bookComment", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     @OrderBy("id ASC")
     @LazyCollection(LazyCollectionOption.FALSE)
-    private List<Comment> comments;
+    private List<Comment> comments;*/
     @ManyToMany(mappedBy = "items", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @OrderBy("id ASC")
     @LazyCollection(LazyCollectionOption.FALSE)
-    private List<Cart> inOrders;*/
+    private List<Cart> inOrders;
 
     public Book(String bookTitle, String description, LocalDate publishDate, int pageNum, String authors, double price, int inStock) {
         this.bookTitle = bookTitle;

@@ -1,10 +1,14 @@
 package users;
 
+import books.Cart;
 import lombok.*;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,6 +26,10 @@ public abstract class User  implements Serializable {
     private String phoneNum;
     private Role role;
     protected String address;
+    @OneToMany(mappedBy = "buyer", cascade = CascadeType.ALL)
+    @OrderBy("id ASC")
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<Cart> myOrders;
 
 
     public User (){}
