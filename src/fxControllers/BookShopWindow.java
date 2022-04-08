@@ -1,7 +1,7 @@
 package fxControllers;
 
 import books.Book;
-import dataBaseOperations.DataBaseOperations;
+import utils.DataBaseOperations;
 import hibernateControllers.BookHibernateCtrl;
 import hibernateControllers.UserHibernateCtrl;
 import javafx.collections.FXCollections;
@@ -25,12 +25,10 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.io.IOException;
 import java.net.URL;
-import java.sql.SQLException;
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static utils.Utils.*;
+import static incorrectDataControl.IncorrectDataControl.*;
 
 public class BookShopWindow implements Initializable {
     @FXML

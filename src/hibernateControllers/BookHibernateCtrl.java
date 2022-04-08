@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static utils.Utils.alertMsg;
+import static incorrectDataControl.IncorrectDataControl.alertMsg;
 
 public class BookHibernateCtrl {
 

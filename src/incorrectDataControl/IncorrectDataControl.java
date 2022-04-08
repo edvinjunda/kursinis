@@ -1,10 +1,10 @@
-package utils;
+package incorrectDataControl;
 
 import javafx.scene.control.Alert;
 
 import java.time.LocalDate;
 
-public class Utils {
+public class IncorrectDataControl {
 
     public static void alertMsg(String header, String text) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

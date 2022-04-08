@@ -14,12 +14,11 @@ import users.Role;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.swing.*;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
-import static utils.Utils.*;
+import static incorrectDataControl.IncorrectDataControl.*;
 
 public class SignUpWindow implements Initializable {
     @FXML

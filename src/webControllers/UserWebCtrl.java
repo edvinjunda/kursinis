@@ -1,6 +1,6 @@
 package webControllers;
 
-import hibernateControllers.BookHibernateCtrl;
+import com.google.gson.GsonBuilder;
 import hibernateControllers.UserHibernateCtrl;
 import com.google.gson.Gson;
 import org.springframework.http.HttpStatus;
@@ -10,79 +10,96 @@ import users.Company;
 import users.Person;
 import users.Role;
 import users.User;
+import utils.LocalDateGsonSerializer;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import java.sql.Connection;
+import java.time.LocalDate;
 import java.util.Properties;
 
 
 @Controller//localhost:8081/application_context/user
-@RequestMapping(value = "/userInfo")
+//@RequestMapping(value = "/userInfo")
 public class UserWebCtrl {
 
     EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("BookShop");
     UserHibernateCtrl userHibernateCtrl = new UserHibernateCtrl(entityManagerFactory);
 
-    //praveryc eta srazy a potym edicirowav astalny kod
-    /*@RequestMapping(value = "/allUsers")
+    @RequestMapping(value = "user/validateUser", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
-    public String getAllUsers() {
-        return userHibernateCtrl.getAllUsers().toString();
-    }*/
+    public String validateUser(@RequestBody String userInfo) {
+        Gson parser = new Gson();
+        Properties data = parser.fromJson(userInfo, Properties.class);
+        User user = userHibernateCtrl.getUserByLoginData(data.getProperty("login"), data.getProperty("password"));
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(LocalDate.class, new LocalDateGsonSerializer());
+        return builder.create().toJson(user, User.class);
+    }
 
-        @RequestMapping(value = "/user/addPerson", method = RequestMethod.POST)
+
+        @RequestMapping(value = "user/createUser", method = RequestMethod.POST)
         @ResponseStatus(value = HttpStatus.OK)
         @ResponseBody
-        public String addNewPerson(@RequestBody String request) {
+        public String createUser(@RequestBody String request) {
             Gson gson = new Gson();
             Properties properties = gson.fromJson(request, Properties.class);
-            Person person = new Person(properties.getProperty("login"), properties.getProperty("password"), properties.getProperty("phone_number"), Role.PERSON ,properties.getProperty("name"), properties.getProperty("surname"));
-            userHibernateCtrl.createUser(person);
+            if (properties.getProperty("userType").equals("P")){
+                Person person = new Person(properties.getProperty("login"), properties.getProperty("password"), properties.getProperty("phone_number"), Role.PERSON ,properties.getProperty("name"), properties.getProperty("surname"));
+                userHibernateCtrl.createUser(person);
+            }
+            else if (properties.getProperty("userType").equals("C")){
+                Company company = new Company(properties.getProperty("login"), properties.getProperty("password"), properties.getProperty("phone_number"), Role.COMPANY ,properties.getProperty("company_title"), properties.getProperty("address"));
+                userHibernateCtrl.createUser(company);
+            }
+            else return "Error";
+
             return "Success";
         }
 
-    @RequestMapping(value = "/user/addCompany", method = RequestMethod.POST)
-    @ResponseStatus(value = HttpStatus.OK)
-    @ResponseBody
-    public String addNewCompany(@RequestBody String request) {
-        Gson gson = new Gson();
-        Properties properties = gson.fromJson(request, Properties.class);
-        Company company = new Company(properties.getProperty("login"), properties.getProperty("password"), properties.getProperty("phone number"), Role.COMPANY ,properties.getProperty("company_title"), properties.getProperty("address"));
-        userHibernateCtrl.createUser(company);
-        return "Success";
-    }
-
     //perdaryti i update person, company, employee
-    @RequestMapping(value = "/user/updateUser/{id}", method = RequestMethod.PUT)
+    @RequestMapping(value = "user/updateUser/{id}", method = RequestMethod.PUT)
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     public String updateUser(@RequestBody String request, @PathVariable(name = "id") int id) {
         Gson gson = new Gson();
         Properties properties = gson.fromJson(request, Properties.class);
+        User user = userHibernateCtrl.getUserById(id);//Integer.parseInt(properties.getProperty("id"))
 
-        User user = userHibernateCtrl.getUserById(id);
-
-        user.setName(properties.getProperty("name"));
         user.setLogin(properties.getProperty("login"));
-        //pabaigsim
-
-        //Person person = new Person(properties.getProperty("login"), properties.getProperty("psw"), properties.getProperty("name"), properties.getProperty("surname"), properties.getProperty("email"));
-        userHibernateCtrl.updateUser(user);
+        user.setPhoneNum(properties.getProperty("phone_number"));
+        if (user.getRole()==Role.PERSON) {//properties.getProperty("userType").equals("P")
+            user.setName(properties.getProperty("name"));
+            user.setSurname(properties.getProperty("surname"));
+            userHibernateCtrl.updateUser(user);
+        }
+        else if (user.getRole()==Role.COMPANY) {
+            user.setCompanyTitle(properties.getProperty("company_title"));
+            user.setCompanyTitle(properties.getProperty("address"));
+            userHibernateCtrl.updateUser(user);
+        }
+        else if (user.getRole()==Role.EMPLOYEE) {
+            user.setName(properties.getProperty("name"));
+            user.setSurname(properties.getProperty("surname"));
+            user.setCompanyTitle(properties.getProperty("address"));
+            userHibernateCtrl.updateUser(user);
+        }
+        else return "wrong user type given or other issue";//userHibernateCtrl.updateUser(user);
         return "Success";
     }
 
-        @RequestMapping(value = "/user/removeUser/{id}", method = RequestMethod.DELETE)
+        @RequestMapping(value = "user/removeUser/{id}", method = RequestMethod.DELETE)
         @ResponseStatus(value = HttpStatus.OK)
         @ResponseBody
         public String removeUser(@PathVariable(name = "id") int id) {
             userHibernateCtrl.removeUser(id);
-            //?//Patikrinti ar tikrai istryne
-            return "Success";
+            User user = userHibernateCtrl.getUserById(id);
+            if (user == null) return "User deleted successfully";
+            else return "Not deleted";
         }
 
     //?
-    @RequestMapping(value = "/user/allUsers", method = RequestMethod.GET)
+    @RequestMapping(value = "user/allUsers", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     public String getAllUsers() {
@@ -91,7 +108,7 @@ public class UserWebCtrl {
     }
     //?
 
-    @RequestMapping(value = "/user/allPerson", method = RequestMethod.GET)
+    @RequestMapping(value = "user/allPerson", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     public String getAllPerson() {
@@ -99,7 +116,7 @@ public class UserWebCtrl {
         return gson.toJson(userHibernateCtrl.getAllPerson().toString());
     }
 
-    @RequestMapping(value = "/user/allCompany", method = RequestMethod.GET)
+    @RequestMapping(value = "user/allCompany", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     public String getAllCompany() {
@@ -107,15 +124,15 @@ public class UserWebCtrl {
         return gson.toJson(userHibernateCtrl.getAllCompany().toString());
     }
 
-    @RequestMapping(value = "/user/userById/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "user/userById/{id}", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     public String getUserById(@PathVariable(name = "id") int id) {
-            userHibernateCtrl.getUserById(id);
-        return "Success";
+            //userHibernateCtrl.getUserById(id);
+        return userHibernateCtrl.getUserById(id).toString();//return "Success";
     }
 
-    @RequestMapping(value = "/user/userByLoginData", method = RequestMethod.GET)
+    @RequestMapping(value = "user/userByLoginData", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     public String getUserByLoginData(@PathVariable(name = "login") String login, @PathVariable(name = "password") String password) {
@@ -125,14 +142,15 @@ public class UserWebCtrl {
     }
 
     //?
-    /*@RequestMapping(value = "/user/userByLogin", method = RequestMethod.GET)
+    @RequestMapping(value = "/user/userByLogin/{login}", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     public String getUserByLoginData(@PathVariable(name = "login") String login) {
 
-        userHibernateCtrl.getUserByLogin(login);
-        return "Success";
-    }*/
+        //;
+        //return "Success";
+        return userHibernateCtrl.getUserByLogin(login).toString();
+    }
     //?
 
 }

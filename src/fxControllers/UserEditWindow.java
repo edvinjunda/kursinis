@@ -19,8 +19,8 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
 
-import static utils.Utils.*;
-import static utils.Utils.alertMsg;
+import static incorrectDataControl.IncorrectDataControl.*;
+import static incorrectDataControl.IncorrectDataControl.alertMsg;
 
 public class UserEditWindow implements Initializable {
     @FXML

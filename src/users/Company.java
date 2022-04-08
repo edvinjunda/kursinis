@@ -55,4 +55,13 @@ public class Company extends User implements Serializable {
     public void setSurname(String text) {
 
     }
+
+    @Override
+    public String toString(){
+        return "Company{" +
+                "companyTitle " + companyTitle +
+                ", address " + address +
+                ", login " + getLogin() +
+                '}';
+    }
 }

@@ -1,4 +1,4 @@
-package dataBaseOperations;
+package utils;
 
 import java.sql.*;
 

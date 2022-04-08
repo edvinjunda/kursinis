@@ -14,11 +14,15 @@
         <property name="mappings">
             <props>
                 <prop key="/user">user</prop>
-                <prop key="/book">books</prop>
+                <prop key="/books">books</prop>
 
             </props>
         </property>
     </bean>
+
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+          p:prefix="/WEB-INF/jsp/"
+          p:suffix=".jsp"/>
 
     <bean name="user" class="webControllers.UserWebCtrl"/>
     <bean name="books" class="webControllers.BookWebCtrl"/>

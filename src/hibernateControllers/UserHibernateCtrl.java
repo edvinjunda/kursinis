@@ -13,7 +13,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
 
-import static utils.Utils.alertMsg;
+import static incorrectDataControl.IncorrectDataControl.alertMsg;
 
 public class UserHibernateCtrl {
 
