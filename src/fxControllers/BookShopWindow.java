@@ -126,11 +126,6 @@ public class BookShopWindow implements Initializable {
     private TableColumn<UserTableParameters, Void> actionsField;
 
 
-    private int userId;
-    private Cart cart;
-
-    //private static DecimalFormat df = new DecimalFormat("#.##");
-
     private ObservableList<UserTableParameters> data = FXCollections.observableArrayList();
 
     EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("BookShop");
@@ -138,6 +133,8 @@ public class BookShopWindow implements Initializable {
     BookHibernateCtrl bookHibernateCtrl = new BookHibernateCtrl(entityManagerFactory);
     CartHibernateCtrl cartHibernateCtrl = new CartHibernateCtrl(entityManagerFactory);
 
+    private int userId;
+    private Cart cart=new Cart(userHibernateCtrl.getUserById(userId));
 
 
     @Override
@@ -165,8 +162,6 @@ public class BookShopWindow implements Initializable {
         allBooksClient.getItems().clear();
         List<Book> inStockBookList = bookHibernateCtrl.getAllBooks(0);
         inStockBookList.forEach(book -> allBooksClient.getItems().add(book.getId() + ":" + book.getBookTitle()));
-
-        cart=new Cart(String.valueOf(userId+1), user);
     }
 
     private Book getBookById(String id) {
@@ -215,7 +210,7 @@ public class BookShopWindow implements Initializable {
     //---------------------------------ADMIN TAB LOGIC START----------------------------------------------------------//
 
     public void loadUsers() {
-        usersTable.setEditable(true);
+        usersTable.setEditable(false);
         usersTable.getItems().clear();
 
         colId.setCellValueFactory(new PropertyValueFactory<>("userId"));
@@ -656,6 +651,16 @@ public class BookShopWindow implements Initializable {
         }
 
         else {
+            /*for(int j = 0; j < cart.getItems().size(); j++)
+            {
+                Book obj = cart.getItems().get(j);
+                obj.setInStock(obj.getInStock()-1);
+                *//*if(obj.getId() == Integer.parseInt(currentOrderList.getSelectionModel().getSelectedItem().toString().split(":")[0])){
+                    cart.getItems().remove(j);
+                    break;
+                }*//*
+            }*/
+
             //items are set before calling this method
             List<Person> people = userHibernateCtrl.getAllPerson();
             Person supervisingEmployee=new Person();
@@ -667,11 +672,12 @@ public class BookShopWindow implements Initializable {
             }
             //buyer is set at the moment of creation Cart object
             cart.setStatus(Status.IN_PROGRESS);
-            //orderNum is set at the moment of creation Cart object
+            cart.setOrderNum(String.valueOf(cart.getId()+1));/*//orderNum is set at the moment of creation Cart object*/
 
             cartHibernateCtrl.createCart(cart);
 
-            cart=null;
+            User user = userHibernateCtrl.getUserById(userId);
+            cart=new Cart(user);
             currentOrderList.getItems().clear();
         }
     }
@@ -689,29 +695,46 @@ public class BookShopWindow implements Initializable {
 
         else {
             cart.getItems().add(currentBook);
+            currentBook.setInStock(currentBook.getInStock()-1);
+            bookHibernateCtrl.updateBook(currentBook);
 
             currentOrderList.getItems().clear();
             List<Book> cartList = cart.getItems();
             cartList.forEach(book -> currentOrderList.getItems().add(book.getId() + ":" + book.getBookTitle()));
+
+            ClearViewFields();
+            allBooksClient.getItems().clear();
+            List<Book> inStockBookList = bookHibernateCtrl.getAllBooks(0);
+            inStockBookList.forEach(book -> allBooksClient.getItems().add(book.getId() + ":" + book.getBookTitle()));
         }
 
     }
 
-    public void removeFromCart(ActionEvent event){//ne rabotaje
+    public void removeFromCart(ActionEvent event){
+        /*Book currentBook = getBookById(allBooksClient.getSelectionModel().getSelectedItem().toString().split(":")[0]);
+
+        cart.getItems().add(currentBook);
+        currentBook.setInStock(currentBook.getInStock()+1);
+        bookHibernateCtrl.updateBook(currentBook);*/
         for(int j = 0; j < cart.getItems().size(); j++)
         {
             Book obj = cart.getItems().get(j);
             if(obj.getId() == Integer.parseInt(currentOrderList.getSelectionModel().getSelectedItem().toString().split(":")[0])){
                 cart.getItems().remove(j);
+                obj.setInStock(obj.getInStock()+1);
+                bookHibernateCtrl.updateBook(obj);
                 break;
             }
         }
 
-        //cart.getItems();//(currentOrderList.getSelectionModel().getSelectedItem());//toString().split(":")[0])
-
         currentOrderList.getItems().clear();
         List<Book> cartList = cart.getItems();
         cartList.forEach(book -> currentOrderList.getItems().add(book.getId() + ":" + book.getBookTitle()));
+
+        ClearViewFields();
+        allBooksClient.getItems().clear();
+        List<Book> inStockBookList = bookHibernateCtrl.getAllBooks(0);
+        inStockBookList.forEach(book -> allBooksClient.getItems().add(book.getId() + ":" + book.getBookTitle()));
     }
 /*
     public void loadComments() {

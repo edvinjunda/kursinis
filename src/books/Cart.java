@@ -45,4 +45,9 @@ public class Cart {
                 this.buyer = buyer;
             }
 
+    public Cart(User buyer) {
+        this.buyer = buyer;
+        this.items = new ArrayList<>();
+        this.supervisingEmployees = new ArrayList<>();
+    }
 }
