@@ -1,6 +1,9 @@
 package fxControllers;
 
 import books.Book;
+import books.Cart;
+import books.Status;
+import hibernateControllers.CartHibernateCtrl;
 import utils.DataBaseOperations;
 import hibernateControllers.BookHibernateCtrl;
 import hibernateControllers.UserHibernateCtrl;
@@ -45,8 +48,6 @@ public class BookShopWindow implements Initializable {
     public ListView<String> allBooksClient;
     //@FXML
     //public TreeView bookCommentTree;      //veliau implementuoti
-    //@FXML
-    //public ListView currentOrderList;     //veliau implementuoti
 
     @FXML
     public ListView employeeBookList;
@@ -126,6 +127,7 @@ public class BookShopWindow implements Initializable {
 
 
     private int userId;
+    private Cart cart;
 
     //private static DecimalFormat df = new DecimalFormat("#.##");
 
@@ -134,6 +136,7 @@ public class BookShopWindow implements Initializable {
     EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("BookShop");
     UserHibernateCtrl userHibernateCtrl = new UserHibernateCtrl(entityManagerFactory);
     BookHibernateCtrl bookHibernateCtrl = new BookHibernateCtrl(entityManagerFactory);
+    CartHibernateCtrl cartHibernateCtrl = new CartHibernateCtrl(entityManagerFactory);
 
 
 
@@ -162,6 +165,8 @@ public class BookShopWindow implements Initializable {
         allBooksClient.getItems().clear();
         List<Book> inStockBookList = bookHibernateCtrl.getAllBooks(0);
         inStockBookList.forEach(book -> allBooksClient.getItems().add(book.getId() + ":" + book.getBookTitle()));
+
+        cart=new Cart(String.valueOf(userId+1), user);
     }
 
     private Book getBookById(String id) {
@@ -646,6 +651,67 @@ public class BookShopWindow implements Initializable {
     }
 
     public void createCart(ActionEvent event) {
+        if(cart.getItems().isEmpty()) {
+            alertMsg("Cart is empty!","Add books to the cart.");
+        }
+
+        else {
+            //items are set before calling this method
+            List<Person> people = userHibernateCtrl.getAllPerson();
+            Person supervisingEmployee=new Person();
+            for(int i=0;i<people.size();i++){
+                supervisingEmployee = people.get(i);
+                if(supervisingEmployee.getRole()==Role.EMPLOYEE) {
+                    cart.getSupervisingEmployees().add(supervisingEmployee);
+                }
+            }
+            //buyer is set at the moment of creation Cart object
+            cart.setStatus(Status.IN_PROGRESS);
+            //orderNum is set at the moment of creation Cart object
+
+            cartHibernateCtrl.createCart(cart);
+
+            cart=null;
+            currentOrderList.getItems().clear();
+        }
+    }
+
+    public void addToCart(ActionEvent event) {
+        Book currentBook = getBookById(allBooksClient.getSelectionModel().getSelectedItem().toString().split(":")[0]);
+
+        if(currentBook==null){
+            alertMsg("This book is unavailable.","It was removed.");
+        }
+
+        else if(currentBook.getInStock()==0){
+            alertMsg("This book is unavailable.","It is sold out.");
+        }
+
+        else {
+            cart.getItems().add(currentBook);
+
+            currentOrderList.getItems().clear();
+            List<Book> cartList = cart.getItems();
+            cartList.forEach(book -> currentOrderList.getItems().add(book.getId() + ":" + book.getBookTitle()));
+        }
+
+    }
+
+    public void removeFromCart(ActionEvent event){//ne rabotaje
+        for(int j = 0; j < cart.getItems().size(); j++)
+        {
+            Book obj = cart.getItems().get(j);
+            if(obj.getId() == Integer.parseInt(currentOrderList.getSelectionModel().getSelectedItem().toString().split(":")[0])){
+                cart.getItems().remove(j);
+                break;
+            }
+        }
+
+        //cart.getItems();//(currentOrderList.getSelectionModel().getSelectedItem());//toString().split(":")[0])
+
+        currentOrderList.getItems().clear();
+        List<Book> cartList = cart.getItems();
+        cartList.forEach(book -> currentOrderList.getItems().add(book.getId() + ":" + book.getBookTitle()));
     }
 /*
     public void loadComments() {

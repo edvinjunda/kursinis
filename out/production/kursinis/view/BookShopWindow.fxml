@@ -54,7 +54,14 @@
                                 <TextField fx:id="searchAuthorsF" onAction="#searchBook" prefHeight="25.0" prefWidth="150.0" promptText="Authors" />
                             </children>
                         </HBox>
-                        <ListView fx:id="allBooksClient" layoutY="51.0" onMouseClicked="#viewBookInfo" prefHeight="370.0" prefWidth="200.0" />
+                        <ListView fx:id="allBooksClient" layoutY="51.0" onMouseClicked="#viewBookInfo" prefHeight="370.0" prefWidth="200.0">
+                     <contextMenu>
+                        <ContextMenu>
+                          <items>
+                            <MenuItem mnemonicParsing="false" onAction="#addToCart" text="Add to cart" />
+                          </items>
+                        </ContextMenu>
+                     </contextMenu></ListView>
                         <TextField fx:id="bookTitleF" editable="false" layoutX="200.0" layoutY="27.0" prefHeight="25.0" prefWidth="200.0" />
                         <TextField fx:id="bookAuthorsF" editable="false" layoutX="400.0" layoutY="27.0" prefHeight="25.0" prefWidth="200.0" />
                         <DatePicker fx:id="bookPublishDateF" editable="false" layoutX="200.0" layoutY="53.0" prefHeight="25.0" prefWidth="150.0" />
@@ -63,7 +70,14 @@
                         <TextField fx:id="bookPriceF" editable="false" layoutX="500.0" layoutY="53.0" prefHeight="25.0" prefWidth="100.0" />
                         <TextArea fx:id="bookDescriptionF" editable="false" layoutX="200.0" layoutY="79.0" prefHeight="200.0" prefWidth="400.0" wrapText="true" />
                   <Button layoutX="705.0" layoutY="1.0" mnemonicParsing="false" onAction="#createCart" prefHeight="25.0" prefWidth="95.0" text="Buy" />
-                  <ListView fx:id="currentOrderList" layoutX="599.0" layoutY="51.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="370.0" prefWidth="200.0" />
+                  <ListView fx:id="currentOrderList" layoutX="599.0" layoutY="51.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="370.0" prefWidth="200.0">
+                     <contextMenu>
+                        <ContextMenu>
+                          <items>
+                            <MenuItem mnemonicParsing="false" onAction="#removeFromCart" text="remove from cart" />
+                          </items>
+                        </ContextMenu>
+                     </contextMenu></ListView>
                   <Label alignment="CENTER" contentDisplay="CENTER" layoutY="27.0" prefHeight="25.0" prefWidth="200.0" text="Book list" />
                   <Label alignment="CENTER" layoutX="599.0" layoutY="27.0" prefHeight="25.0" prefWidth="200.0" text="Cart list" />
                     </children>
