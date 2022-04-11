@@ -57,7 +57,6 @@ public class UserWebCtrl {
             return "Success";
         }
 
-    //perdaryti i update person, company, employee
     @RequestMapping(value = "user/updateUser/{id}", method = RequestMethod.PUT)
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
@@ -128,8 +127,7 @@ public class UserWebCtrl {
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     public String getUserById(@PathVariable(name = "id") int id) {
-            //userHibernateCtrl.getUserById(id);
-        return userHibernateCtrl.getUserById(id).toString();//return "Success";
+        return userHibernateCtrl.getUserById(id).toString();
     }
 
     @RequestMapping(value = "user/userByLoginData", method = RequestMethod.GET)
@@ -145,7 +143,7 @@ public class UserWebCtrl {
     @RequestMapping(value = "/user/userByLogin/{login}", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
-    public String getUserByLoginData(@PathVariable(name = "login") String login) {
+    public String getUserByLogin(@PathVariable(name = "login") String login) {
 
         //;
         //return "Success";
