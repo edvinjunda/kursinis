@@ -17,7 +17,7 @@
 
 <TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fxControllers.BookShopWindow">
     <tabs>
-        <Tab fx:id="myAccount" text="My account">
+        <Tab fx:id="myAccount" onSelectionChanged="#viewCartsInfo" text="My account">
             <content>
                 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="450.0" prefWidth="800.0">
                     <children>
@@ -34,7 +34,10 @@
                       </Tab>
                       <Tab text="Manage carts">
                         <content>
-                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <ListView fx:id="buyerCart" prefHeight="390.0" prefWidth="200.0" />
+                                 </children></AnchorPane>
                         </content>
                       </Tab>
                     </tabs>

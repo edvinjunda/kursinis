@@ -1,11 +1,15 @@
 package hibernateControllers;
 
+import books.Book;
 import books.Cart;
+import users.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import java.util.List;
 
@@ -107,4 +111,27 @@ public class CartHibernateCtrl {
         }
         return cart;
     }
+
+    public List getCartByBuyer(User user){
+        EntityManager em = getEm();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Cart> query = cb.createQuery(Cart.class);
+            Root<Cart> root = query.from(Cart.class);
+            query.select(root).where(cb.equal(root.get("buyer"),user));
+            Query q = em.createQuery(query);
+            return q.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+        return null;
+    }
+
+
+
+
 }

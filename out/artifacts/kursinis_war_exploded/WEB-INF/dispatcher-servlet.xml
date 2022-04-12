@@ -14,7 +14,7 @@
         <property name="mappings">
             <props>
                 <prop key="/user">user</prop>
-                <prop key="/books">books</prop>
+                <prop key="/book">books</prop>
 
             </props>
         </property>

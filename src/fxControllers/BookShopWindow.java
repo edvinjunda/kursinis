@@ -33,7 +33,7 @@ import java.util.ResourceBundle;
 
 import static incorrectDataControl.IncorrectDataControl.*;
 
-public class BookShopWindow implements Initializable {
+public class BookShopWindow<cart> implements Initializable {
     @FXML
     public HBox searchBar;
     @FXML
@@ -68,6 +68,8 @@ public class BookShopWindow implements Initializable {
 
     @FXML
     public Button logOutButton;
+    @FXML
+    public ListView buyerCart;
     @FXML
     private Tab myAccount;
     @FXML
@@ -134,11 +136,14 @@ public class BookShopWindow implements Initializable {
     CartHibernateCtrl cartHibernateCtrl = new CartHibernateCtrl(entityManagerFactory);
 
     private int userId;
-    private Cart cart=new Cart(userHibernateCtrl.getUserById(userId));
-
+    private Cart cart;//cia buvo padaromas kintamojo reiksmes nustatymas pagal konstruktoriu su reiksmemis
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) { updateBookButton.setVisible(false); }
+    public void initialize(URL location, ResourceBundle resources) {
+        User buyer = userHibernateCtrl.getUserById(userId);
+        cart=new Cart(buyer);//po sito ne ivyksta tai kas yra tikimasi
+        updateBookButton.setVisible(false);
+    }
 
     public void setUserId(int userId) {
         this.userId = userId;
@@ -651,6 +656,8 @@ public class BookShopWindow implements Initializable {
         }
 
         else {
+            User buyer = userHibernateCtrl.getUserById(userId);
+
             /*for(int j = 0; j < cart.getItems().size(); j++)
             {
                 Book obj = cart.getItems().get(j);
@@ -670,16 +677,23 @@ public class BookShopWindow implements Initializable {
                     cart.getSupervisingEmployees().add(supervisingEmployee);
                 }
             }
-            //buyer is set at the moment of creation Cart object
+            cart.setBuyer(buyer);//laikinas sprendimas
             cart.setStatus(Status.IN_PROGRESS);
             cart.setOrderNum(String.valueOf(cart.getId()+1));/*//orderNum is set at the moment of creation Cart object*/
 
             cartHibernateCtrl.createCart(cart);
 
-            User user = userHibernateCtrl.getUserById(userId);
-            cart=new Cart(user);
+            cart=new Cart(buyer);
             currentOrderList.getItems().clear();
         }
+    }
+
+    public void viewCartsInfo(){
+
+        List<Cart> carts = cartHibernateCtrl.getCartByBuyer(userHibernateCtrl.getUserById(userId));
+        buyerCart.getItems().clear();
+        carts.forEach(cart->buyerCart.getItems().add(cart.getId() + ":" + cart.getStatus()));
+
     }
 
     public void addToCart(ActionEvent event) {
