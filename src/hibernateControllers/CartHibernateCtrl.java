@@ -2,6 +2,7 @@ package hibernateControllers;
 
 import books.Book;
 import books.Cart;
+import org.springframework.transaction.annotation.Transactional;
 import users.User;
 
 import javax.persistence.EntityManager;
@@ -9,6 +10,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 
 import java.util.List;
@@ -80,7 +82,7 @@ public class CartHibernateCtrl {
             }
         }
     }
-
+//criteria.setFetchMode("roles", FetchMode.EAGER);
     public List getAllCarts() {
         EntityManager em = getEm();
         try {
@@ -107,18 +109,18 @@ public class CartHibernateCtrl {
             cart = em.find(Cart.class, id);
             em.getTransaction().commit();
         } catch (Exception e) {
-            System.out.println("User with entered Id doesn't exist");
+            System.out.println("User with entered Id doesn't exist");///////////////////////
         }
         return cart;
     }
 
-    public List getCartByBuyer(User user){
+    public List getCartByBuyer(User buyer){
         EntityManager em = getEm();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Cart> query = cb.createQuery(Cart.class);
             Root<Cart> root = query.from(Cart.class);
-            query.select(root).where(cb.equal(root.get("buyer"),user));
+            query.select(root).where(cb.equal(root.get("buyer"),buyer));
             Query q = em.createQuery(query);
             return q.getResultList();
         } catch (Exception e) {
@@ -131,7 +133,24 @@ public class CartHibernateCtrl {
         return null;
     }
 
-
+    /*public List getCartByEmp(int id){
+        EntityManager em = getEm();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Cart> query = cb.createQuery(Cart.class);
+            Root<Cart> root = query.from(Cart.class);
+            query.select(root).where(cb.equal(root.get("supervisingEmployees_id"),id));
+            Query q = em.createQuery(query);
+            return q.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+        return null;
+    }*/
 
 
 }

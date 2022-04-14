@@ -28,12 +28,13 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import static incorrectDataControl.IncorrectDataControl.*;
 
-public class BookShopWindow<cart> implements Initializable {
+public class BookShopWindow implements Initializable {
     @FXML
     public HBox searchBar;
     @FXML
@@ -70,6 +71,8 @@ public class BookShopWindow<cart> implements Initializable {
     public Button logOutButton;
     @FXML
     public ListView buyerCart;
+    @FXML
+    public ListView employeeCartsInfo;
     @FXML
     private Tab myAccount;
     @FXML
@@ -140,13 +143,13 @@ public class BookShopWindow<cart> implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        User buyer = userHibernateCtrl.getUserById(userId);
-        cart=new Cart(buyer);//po sito ne ivyksta tai kas yra tikimasi
         updateBookButton.setVisible(false);
     }
 
     public void setUserId(int userId) {
         this.userId = userId;
+        User buyer = userHibernateCtrl.getUserById(userId);
+        cart=new Cart(buyer);
         fillTablesByUser();
     }
 
@@ -620,6 +623,28 @@ public class BookShopWindow<cart> implements Initializable {
         }
     }
 
+    public void loadCartsInfo(){ //dabaigti
+
+        List<Cart> carts = cartHibernateCtrl.getAllCarts();//getCartBySupervisingEmp(userHibernateCtrl.getUserById(userId));
+        List<Cart> empCarts=new ArrayList<>();
+
+
+        for(int i=0;i<carts.size();i++){
+            Cart currentCart=carts.get(i);
+            List<Person> currentSupervisingEmp = currentCart.getSupervisingEmployees();
+            for(int j=0;j<currentSupervisingEmp.size();j++){
+                Person person=currentSupervisingEmp.get(i);
+                if(person.equals(userHibernateCtrl.getUserById(userId))){
+                    empCarts.add(currentCart);
+                }
+            }
+        }
+
+        employeeCartsInfo.getItems().clear();
+        empCarts.forEach(cart->employeeCartsInfo.getItems().add(cart.getId() + ":" + cart.getStatus()));
+
+    }
+
     //---------------------------------EMPLOYEE TAB LOGIC END----------------------------------------------------------//
 
 
@@ -677,9 +702,8 @@ public class BookShopWindow<cart> implements Initializable {
                     cart.getSupervisingEmployees().add(supervisingEmployee);
                 }
             }
-            cart.setBuyer(buyer);//laikinas sprendimas
+            //cart buyer yra nustatomas pasileidus bookshopwindow langui, kur yra nustatomas userId
             cart.setStatus(Status.IN_PROGRESS);
-            cart.setOrderNum(String.valueOf(cart.getId()+1));/*//orderNum is set at the moment of creation Cart object*/
 
             cartHibernateCtrl.createCart(cart);
 

@@ -25,7 +25,7 @@ public class UserWebCtrl {
     EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("BookShop");
     UserHibernateCtrl userHibernateCtrl = new UserHibernateCtrl(entityManagerFactory);
 
-    @RequestMapping(value = "user/validateUser", method = RequestMethod.POST)
+    @RequestMapping(value = "user/validateUser", method = RequestMethod.POST)//neveikia?
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     public String validateUser(@RequestBody String userInfo) {
