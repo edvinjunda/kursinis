@@ -1,5 +1,6 @@
 package webControllers;
 
+import books.Book;
 import books.Comment;
 import com.google.gson.Gson;
 import hibernateControllers.BookHibernateCtrl;
@@ -13,6 +14,7 @@ import users.User;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import java.time.LocalDate;
 import java.util.Properties;
 
 @Controller
@@ -29,15 +31,30 @@ public class CommentWebCtrl {
     public String writeComment(@RequestBody String request) {
         Gson gson = new Gson();
         Properties properties = gson.fromJson(request, Properties.class);
-        /*if (properties.getProperty("userType").equals("P")){
-            Person person = new Person(properties.getProperty("login"), properties.getProperty("password"), properties.getProperty("phone_number"), Role.PERSON ,properties.getProperty("name"), properties.getProperty("surname"));
-            userHibernateCtrl.createUser(person);
+        if (properties.getProperty("commentType").equals("reply")){
+            Comment comment=new Comment(
+                    properties.getProperty("commentText"),
+                    commentHibernateCtrl.getCommentById(Integer.parseInt(properties.getProperty("parentCommentId"))),
+                    bookHibernateCtrl.getBookById(Integer.parseInt(properties.getProperty("bookCommentId"))),
+                    LocalDate.parse(properties.getProperty("datePosted")),
+                    properties.getProperty("commenterName"));
+
+            Book book=bookHibernateCtrl.getBookById(Integer.parseInt(properties.getProperty("bookCommentId")));
+            book.getComments().add(comment);
+            bookHibernateCtrl.updateBook(book);
         }
-        else if (properties.getProperty("userType").equals("C")){
-            Company company = new Company(properties.getProperty("login"), properties.getProperty("password"), properties.getProperty("phone_number"), Role.COMPANY ,properties.getProperty("company_title"), properties.getProperty("address"));
-            userHibernateCtrl.createUser(company);
-        }*/
-        //else return "Error";
+        else if (properties.getProperty("commentType").equals("main")){
+            Comment comment=new Comment(
+                    properties.getProperty("commentText"),
+                    bookHibernateCtrl.getBookById(Integer.parseInt(properties.getProperty("bookCommentId"))),
+                    LocalDate.parse(properties.getProperty("datePosted")),
+                    properties.getProperty("commenterName"));
+
+            Book book=bookHibernateCtrl.getBookById(Integer.parseInt(properties.getProperty("bookCommentId")));
+            book.getComments().add(comment);
+            bookHibernateCtrl.updateBook(book);
+        }
+        else return "Error";
 
         return "Success";
     }
@@ -48,7 +65,10 @@ public class CommentWebCtrl {
     public String updateComment(@RequestBody String request, @PathVariable(name = "id") int id) {
         Gson gson = new Gson();
         Properties properties = gson.fromJson(request, Properties.class);
-        Comment comment = commentHibernateCtrl.getCommentById(id);//Integer.parseInt(properties.getProperty("id"))
+        Comment comment = commentHibernateCtrl.getCommentById(id);
+
+        comment.setCommentText(properties.getProperty("commentText")+"(//edited//)");
+        commentHibernateCtrl.editComment(comment);
 
         return "Success";
     }
@@ -63,7 +83,6 @@ public class CommentWebCtrl {
         else return "Not deleted";
     }
 
-    //?
     @RequestMapping(value = "comment/allComments")
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
@@ -71,12 +90,12 @@ public class CommentWebCtrl {
         Gson gson = new Gson();
         return gson.toJson(commentHibernateCtrl.getAllComments().toString());
     }
-    //?
 
     @RequestMapping(value = "comment/commentById/{id}", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     public String getCommentById(@PathVariable(name = "id") int id) {
+        System.out.println(commentHibernateCtrl.getCommentById(id).toString());
         return commentHibernateCtrl.getCommentById(id).toString();
     }
 

@@ -114,8 +114,20 @@ public class Book implements Serializable {
     }
 
 
-    @Override
+    /*@Override
     public int hashCode() {
         return getClass().hashCode();
+    }*/
+
+    @Override
+    public String toString(){
+        return id + "." +
+                authors + ", " +
+                bookTitle + ", " +
+                publishDate + ", pages: " +
+                pageNum + ", price: "  +
+                price + ", in stock: " +
+                inStock + ". Description: " +
+                description;
     }
 }

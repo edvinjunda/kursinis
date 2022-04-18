@@ -52,5 +52,10 @@ public class Cart {
     }
 */
 
-
+    @Override
+    public String toString(){
+        return id + ". Buyer id: " +
+                buyer.getId() + ", status: " +
+                status;
+    }
 }

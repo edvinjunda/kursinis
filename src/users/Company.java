@@ -59,9 +59,10 @@ public class Company extends User implements Serializable {
     @Override
     public String toString(){
         return "Company{" +
-                "companyTitle " + companyTitle +
-                ", address " + address +
-                ", login " + getLogin() +
+                "companyTitle: " + companyTitle +
+                ", address: " + address +
+                ", login: " + getLogin() +
+                ", phone nr: " + getPhoneNum() +
                 '}';
     }
 }

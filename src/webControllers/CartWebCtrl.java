@@ -79,7 +79,7 @@ public class CartWebCtrl {
     public String removeCart(@PathVariable(name = "id") int id) {
         cartHibernateCtrl.removeCart(id);
         Cart cart = cartHibernateCtrl.getCartById(id);
-        if (cart == null) return "Cart   deleted successfully";
+        if (cart == null) return "Cart deleted successfully";
         else return "Not deleted";
     }
 

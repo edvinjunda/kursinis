@@ -40,6 +40,13 @@ public class Comment implements Serializable {
         this.commenterName = commenterName;
     }
 
+    public Comment(String commentText, Book bookComment, LocalDate datePosted, String commenterName) {
+        this.commentText = commentText;
+        this.bookComment = bookComment;
+        this.datePosted = datePosted;
+        this.commenterName = commenterName;
+    }
+
     @Override
     public String toString() {
         return id + "." + commentText + " (" + "Posted by " +  commenterName + " on " + datePosted + ")";

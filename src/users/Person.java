@@ -1,6 +1,7 @@
 package users;
 
 import lombok.*;
+import org.springframework.web.servlet.LocaleResolver;
 
 import javax.persistence.Entity;
 import java.io.Serializable;
@@ -58,10 +59,26 @@ public class Person extends User implements Serializable {
 
     @Override
     public String toString(){
-        return "Person{" +
-                "name " + name +
-                ", surname " + surname +
-                ", login " + getLogin() +
-                '}';
+
+        if(getRole()==Role.EMPLOYEE || getRole()==Role.ADMIN){
+            return "Person{" +
+                    "name: " + name +
+                    ", surname: " + surname +
+                    ", address: " + address +
+                    ", login: " + getLogin() +
+                    ", phone nr: " + getPhoneNum() +
+                    ", role: " + getRole() +
+                    '}';
+        }
+
+        else {
+            return "Person{" +
+                    "name: " + name +
+                    ", surname: " + surname +
+                    ", login: " + getLogin() +
+                    ", phone nr: " + getPhoneNum() +
+                    '}';
+        }
     }
+
 }

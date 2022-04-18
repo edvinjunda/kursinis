@@ -97,16 +97,6 @@ public class UserWebCtrl {
             else return "Not deleted";
         }
 
-    //?
-    @RequestMapping(value = "user/allUsers", method = RequestMethod.GET)
-    @ResponseStatus(value = HttpStatus.OK)
-    @ResponseBody
-    public String getAllUsers() {
-        Gson gson = new Gson();
-        return gson.toJson(userHibernateCtrl.getAllUsers().toString());
-    }
-    //?
-
     @RequestMapping(value = "user/allPerson", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
@@ -133,22 +123,19 @@ public class UserWebCtrl {
     @RequestMapping(value = "user/userByLoginData", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
-    public String getUserByLoginData(@PathVariable(name = "login") String login, @PathVariable(name = "password") String password) {
+    public String getUserByLoginData(@RequestBody String request) {
+        Gson gson = new Gson();
+        Properties properties = gson.fromJson(request, Properties.class);
 
-        userHibernateCtrl.getUserByLoginData(login, password);
-        return "Success";
+        return userHibernateCtrl.getUserByLoginData(properties.getProperty("login"),properties.getProperty("password")).toString();
     }
 
-    //?
     @RequestMapping(value = "/user/userByLogin/{login}", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     public String getUserByLogin(@PathVariable(name = "login") String login) {
 
-        //;
-        //return "Success";
         return userHibernateCtrl.getUserByLogin(login).toString();
     }
-    //?
 
 }
