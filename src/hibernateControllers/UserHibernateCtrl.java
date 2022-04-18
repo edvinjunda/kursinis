@@ -86,7 +86,6 @@ public class UserHibernateCtrl {
             em.remove(user); //REMOVE
             em.getTransaction().commit();
         } catch (Exception e) {
-            //e.printStackTrace();
             alertMsg("This user is unavailable.","The user was already removed.");
         } finally {
             if (em != null) em.close();

@@ -16,6 +16,7 @@
                 <prop key="/user">user</prop>
                 <prop key="/book">books</prop>
                 <prop key="/cart">carts</prop>
+                <prop key="/comment">comments</prop>
 
             </props>
         </property>
@@ -28,5 +29,6 @@
     <bean name="user" class="webControllers.UserWebCtrl"/>
     <bean name="books" class="webControllers.BookWebCtrl"/>
     <bean name="carts" class="webControllers.CartWebCtrl"/>
+    <bean name="comments" class="webControllers.CommentWebCtrl"/>
 
 </beans>

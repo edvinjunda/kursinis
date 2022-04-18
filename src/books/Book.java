@@ -28,10 +28,10 @@ public class Book implements Serializable {
     private String authors;
     private double price;
     private int inStock;
-    /*@OneToMany(mappedBy = "bookComment", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "bookComment", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     @OrderBy("id ASC")
     @LazyCollection(LazyCollectionOption.FALSE)
-    private List<Comment> comments;*/
+    private List<Comment> comments;
     @ManyToMany(mappedBy = "items", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @OrderBy("id ASC")
     @LazyCollection(LazyCollectionOption.FALSE)
