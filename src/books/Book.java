@@ -114,11 +114,6 @@ public class Book implements Serializable {
     }
 
 
-    /*@Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }*/
-
     @Override
     public String toString(){
         return id + "." +

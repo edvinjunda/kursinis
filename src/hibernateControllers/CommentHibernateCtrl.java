@@ -75,7 +75,8 @@ public class CommentHibernateCtrl {
             try{
                 comment = em.getReference(Comment.class, id);
                 comment.getId();
-            } catch (Exception e){
+            }
+            catch (Exception e){
                 System.out.println("Comment by given Id can't be found");
             }
             em.remove(comment);

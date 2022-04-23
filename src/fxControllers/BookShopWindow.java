@@ -2,8 +2,10 @@ package fxControllers;
 
 import books.Book;
 import books.Cart;
+import books.Comment;
 import books.Status;
 import hibernateControllers.CartHibernateCtrl;
+import hibernateControllers.CommentHibernateCtrl;
 import utils.DataBaseOperations;
 import hibernateControllers.BookHibernateCtrl;
 import hibernateControllers.UserHibernateCtrl;
@@ -33,6 +35,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import static incorrectDataControl.IncorrectDataControl.*;
+import static java.lang.Integer.parseInt;
 
 public class BookShopWindow implements Initializable {
     @FXML
@@ -47,8 +50,8 @@ public class BookShopWindow implements Initializable {
     public TextField searchAuthorsF;
     @FXML
     public ListView<String> allBooksClient;
-    //@FXML
-    //public TreeView bookCommentTree;      //veliau implementuoti
+    @FXML
+    public TreeView bookCommentTree;      //veliau implementuoti
 
     @FXML
     public ListView employeeBookList;
@@ -137,6 +140,7 @@ public class BookShopWindow implements Initializable {
     UserHibernateCtrl userHibernateCtrl = new UserHibernateCtrl(entityManagerFactory);
     BookHibernateCtrl bookHibernateCtrl = new BookHibernateCtrl(entityManagerFactory);
     CartHibernateCtrl cartHibernateCtrl = new CartHibernateCtrl(entityManagerFactory);
+    CommentHibernateCtrl commentHibernateCtrl = new CommentHibernateCtrl(entityManagerFactory);
 
     private int userId;
     private Cart cart;//cia buvo padaromas kintamojo reiksmes nustatymas pagal konstruktoriu su reiksmemis
@@ -204,16 +208,6 @@ public class BookShopWindow implements Initializable {
         createBookPublishDate.setValue(null);
         createBookTitle.clear();
     }
-
-    /*
-
-    private void addTreeItem(Comment comment, TreeItem parent) {
-        TreeItem<Comment> treeItem = new TreeItem<>(comment);
-        parent.getChildren().add(treeItem);
-        comment.getReplies().forEach(sub -> addTreeItem(sub, treeItem));
-    }
-
-     */
 
     //---------------------------------ADMIN TAB LOGIC START----------------------------------------------------------//
 
@@ -398,14 +392,13 @@ public class BookShopWindow implements Initializable {
             Parent parent = fxmlLoader.load();
             UserEditWindow userEditWindow = fxmlLoader.getController();
             userEditWindow.SetFields(user);
-            //userEditWindow.setAdminId(userId);
             Scene scene = new Scene(parent);
-            //Stage stage = (Stage) searchAuthorsF.getScene().getWindow();
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Edit user");
             stage.setScene(scene);
-            stage.show();
+            stage.showAndWait();
+            loadUsers();
         }
     }
 
@@ -672,6 +665,8 @@ public class BookShopWindow implements Initializable {
             bookInStockF.setText(String.valueOf(currentBook.getInStock()));
             bookPriceF.setText(String.valueOf(currentBook.getPrice()));
             bookDescriptionF.setText(currentBook.getDescription());
+
+            loadComments();
         }
     }
 
@@ -774,27 +769,57 @@ public class BookShopWindow implements Initializable {
         List<Book> inStockBookList = bookHibernateCtrl.getAllBooks(0);
         inStockBookList.forEach(book -> allBooksClient.getItems().add(book.getId() + ":" + book.getBookTitle()));
     }
-/*
+
+
+    private void addTreeItem(Comment comment, TreeItem parent) {
+        TreeItem<Comment> treeItem = new TreeItem<>(comment);
+        parent.getChildren().add(treeItem);
+        comment.getReplies().forEach(sub -> addTreeItem(sub, treeItem));
+    }
+
     public void loadComments() {
-        Book currentBook = getBookById(allBooksClient.getSelectionModel().getSelectedItem().split(":")[0]);
+        Book currentBook = getBookById(allBooksClient.getSelectionModel().getSelectedItem().toString().split(":")[0]);
         bookCommentTree.setRoot(new TreeItem<String>("Comments:"));
         bookCommentTree.setShowRoot(false);
         bookCommentTree.getRoot().setExpanded(true);
-        currentBook.getComments().forEach(task -> addTreeItem(task, bookCommentTree.getRoot()));
+        currentBook.getComments().forEach(comment -> addTreeItem(comment, bookCommentTree.getRoot()));
     }
-    public void writeReview() throws IOException {
-        //Susikurti nauja forma arba gal galima su alert
-        FXMLLoader fxmlLoader = new FXMLLoader(LoginPage.class.getResource("../view/write-comment-page.fxml"));
+
+    public void writeComment(ActionEvent actionEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(LoginWindow.class.getResource("../view/WriteCommentWindow.fxml"));
         Parent parent = fxmlLoader.load();
-        WriteCommentPage writeCommentPage = fxmlLoader.getController();
-        writeCommentPage.setBookId(Integer.parseInt(allBooksClient.getSelectionModel().getSelectedItem().split(":")[0]), 0);
+        WriteCommentWindow writeCommentWindow = fxmlLoader.getController();
+        writeCommentWindow.setData(parseInt(allBooksClient.getSelectionModel().getSelectedItem().toString().split(":")[0]), 0, userId);
         Scene scene = new Scene(parent);
         Stage stage = new Stage();
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setTitle("Book shop ITf");
+        stage.setTitle("Comment window");
         stage.setScene(scene);
+        stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
-    }*/
+        loadComments();
+    }
+
+    public void addReply(ActionEvent actionEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(LoginWindow.class.getResource("../view/WriteCommentWindow.fxml"));
+        Parent parent = fxmlLoader.load();
+        WriteCommentWindow writeCommentWindow = fxmlLoader.getController();
+        String commentId = ((bookCommentTree.getSelectionModel().getSelectedItem().toString().split("\\.")[0]).replace("TreeItem [ value: ", ""));
+        writeCommentWindow.setData(0, parseInt(commentId), userId);
+        Scene scene = new Scene(parent);
+        Stage stage = new Stage();
+        stage.setTitle("Reply window");
+        stage.setScene(scene);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+        loadComments();
+
+    }
+
+    public void deleteComment(ActionEvent actionEvent) {
+        String commentId = ((bookCommentTree.getSelectionModel().getSelectedItem().toString().split("\\.")[0]).replace("TreeItem [ value: ", ""));
+        commentHibernateCtrl.removeComment(Integer.parseInt(commentId));
+        loadComments();
+    }
 
     //---------------------------------CUSTOMER TAB LOGIC END----------------------------------------------------------//
 

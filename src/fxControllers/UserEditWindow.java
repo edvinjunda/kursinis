@@ -108,7 +108,7 @@ public class UserEditWindow implements Initializable {
         stage.show();
     }*/
 
-    public void saveAndReturnToBookShop() throws IOException {
+    /*public void saveAndReturnToBookShop() throws IOException {
 
         FXMLLoader fxmlLoader = new FXMLLoader(BookShopWindow.class.getResource("../view/BookShopWindow.fxml"));
         Parent parent = fxmlLoader.load();
@@ -119,7 +119,7 @@ public class UserEditWindow implements Initializable {
         stage.setTitle("Book Shop");
         stage.setScene(scene);
         stage.show();
-    }
+    }*/
 
 
     public void updateUser(ActionEvent actionEvent) throws IOException {
@@ -179,6 +179,9 @@ public class UserEditWindow implements Initializable {
                     editedUser.setSurname(editSurnameF.getText());
 
                     userHibernateCtrl.updateUser(editedUser);
+
+                    Stage stage = (Stage) saveEditedUser.getScene().getWindow();
+                    stage.close();
                 }
             }
 
@@ -204,6 +207,9 @@ public class UserEditWindow implements Initializable {
                     editedUser.setAddress(editAddressF.getText());
 
                     userHibernateCtrl.updateUser(editedUser);
+
+                    Stage stage = (Stage) saveEditedUser.getScene().getWindow();
+                    stage.close();
                 }
 
             }
@@ -247,12 +253,15 @@ public class UserEditWindow implements Initializable {
                 editedUser.setAddress(editAddressF.getText());
 
                 userHibernateCtrl.updateUser(editedUser);
+
+                Stage stage = (Stage) saveEditedUser.getScene().getWindow();
+                stage.close();
                 }
 
             }
+
         }
-        Stage stage = (Stage) saveEditedUser.getScene().getWindow();
-        stage.close();
+
     }
 
 

@@ -12,6 +12,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 
@@ -61,6 +62,7 @@
                      <contextMenu>
                         <ContextMenu>
                           <items>
+                              <MenuItem mnemonicParsing="false" onAction="#writeComment" text="Write comment" />
                             <MenuItem mnemonicParsing="false" onAction="#addToCart" text="Add to cart" />
                           </items>
                         </ContextMenu>
@@ -83,6 +85,16 @@
                      </contextMenu></ListView>
                   <Label alignment="CENTER" contentDisplay="CENTER" layoutY="27.0" prefHeight="25.0" prefWidth="200.0" text="Book list" />
                   <Label alignment="CENTER" layoutX="599.0" layoutY="27.0" prefHeight="25.0" prefWidth="200.0" text="Cart list" />
+                  <TreeView fx:id="bookCommentTree" layoutX="200.0" layoutY="279.0" prefHeight="145.0" prefWidth="400.0">
+                     <contextMenu>
+                        <ContextMenu>
+                          <items>
+                            <MenuItem mnemonicParsing="false" onAction="#addReply" text="Add reply" />
+                              <MenuItem mnemonicParsing="false" onAction="#deleteComment" text="Delete comment" />
+                          </items>
+                        </ContextMenu>
+                     </contextMenu>
+                  </TreeView>
                     </children>
                 </AnchorPane>
             </content>
