@@ -73,7 +73,8 @@ public class BookHibernateCtrl {
             em.remove(book);
             em.getTransaction().commit();
         } catch (Exception e) {
-            //e.printStackTrace();
+            e.printStackTrace();
+            System.out.println(id+"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
             alertMsg("This book is unavailable.","It was already removed.");
         } finally {
             if (em != null) {
@@ -118,7 +119,7 @@ public class BookHibernateCtrl {
         return book;
     }
 
-    public List getFilteredBooks(String title, LocalDate publishDateStart, LocalDate publishDateEnd, String authors) {
+    public List getFilteredBooks(String title, String authors, LocalDate publishDateStart, LocalDate publishDateEnd, int inStock) {
         if(publishDateStart == null) publishDateStart = LocalDate.parse("1500-01-01");
         if(publishDateEnd == null) publishDateEnd = LocalDate.parse("2200-01-01");
         EntityManager em = getEm();
@@ -126,7 +127,7 @@ public class BookHibernateCtrl {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Book> query = cb.createQuery(Book.class);
             Root<Book> root = query.from(Book.class);
-            query.select(root).where(cb.and(cb.like(root.get("bookTitle"), "%" + title + "%")), cb.between(root.get("publishDate"), publishDateStart, publishDateEnd), cb.like(root.get("authors"), "%" + authors + "%"),cb.gt(root.get("inStock"), 0));
+            query.select(root).where(cb.and(cb.like(root.get("bookTitle"), "%" + title + "%")), cb.like(root.get("authors"), "%" + authors + "%"), cb.between(root.get("publishDate"), publishDateStart, publishDateEnd), cb.gt(root.get("inStock"), inStock));
             Query q = em.createQuery(query);
             return q.getResultList();
         } catch (Exception e) {

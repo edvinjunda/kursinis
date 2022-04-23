@@ -41,23 +41,17 @@ public class BookShopWindow implements Initializable {
     @FXML
     public HBox searchBar;
     @FXML
-    public TextField searchBookF;
+    public TextField searchBookCustF, searchAuthorsCustF;
     @FXML
-    public DatePicker searchFromDate;
+    public DatePicker searchFromDateCust;
     @FXML
-    public DatePicker searchToDate;
-    @FXML
-    public TextField searchAuthorsF;
+    public DatePicker searchToDateCust;
     @FXML
     public ListView<String> allBooksClient;
     @FXML
     public TreeView bookCommentTree;
     @FXML
-    public MenuItem commentReplyButton;
-    @FXML
-    public MenuItem commentDeleteButton;
-    @FXML
-    public MenuItem commentEditButton;
+    public MenuItem commentReplyButton, commentEditButton, commentDeleteButton;
 
 
     @FXML
@@ -97,6 +91,10 @@ public class BookShopWindow implements Initializable {
     public Button addBookButton;
     @FXML
     public Button updateBookButton;
+    @FXML
+    TextField searchBookEmpF, searchAuthorsEmpF;
+    @FXML
+    DatePicker searchFromDateEmp, searchToDateEmp;
 
     @FXML
     private TextField bookAuthorsF;
@@ -177,10 +175,10 @@ public class BookShopWindow implements Initializable {
             tabPane.getTabs().remove(adminTools);
             }
 
-        ClearViewFields();
+        /*ClearViewFields();
         allBooksClient.getItems().clear();
         List<Book> inStockBookList = bookHibernateCtrl.getAllBooks(0);
-        inStockBookList.forEach(book -> allBooksClient.getItems().add(book.getId() + ":" + book.getBookTitle()));
+        inStockBookList.forEach(book -> allBooksClient.getItems().add(book.getId() + ":" + book.getBookTitle()));*/
     }
 
     public void disableCommentButtons(){
@@ -193,6 +191,21 @@ public class BookShopWindow implements Initializable {
             commentDeleteButton.setVisible(true);
             commentEditButton.setVisible(true);
         }
+    }
+
+
+
+    public ListView searchBook(ListView bookList, TextField bookF, TextField authorsF, DatePicker fromDate, DatePicker toDate, int inStock) {
+        List<Book> filteredBooks = bookHibernateCtrl.getFilteredBooks(bookF.getText(), authorsF.getText(), fromDate.getValue(),toDate.getValue(),inStock);
+        bookList.getItems().clear();
+        if(inStock==-1){
+            filteredBooks.forEach(book -> bookList.getItems().add(book.getId() + ":" + book.getBookTitle() + " - " + book.getInStock() + " in stock"));
+        }
+        else {
+            filteredBooks.forEach(book -> bookList.getItems().add(book.getId() + ":" + book.getBookTitle()));
+        }
+
+        return bookList;
     }
 
     private Book getBookById(String id) {
@@ -427,10 +440,14 @@ public class BookShopWindow implements Initializable {
 
     //---------------------------------EMPLOYEE TAB LOGIC START----------------------------------------------------------//
 
-    public void loadBooks() {
+    /*public void loadBooks() {
         employeeBookList.getItems().clear();
         List<Book> allBooksInShop = bookHibernateCtrl.getAllBooks(-1);
         allBooksInShop.forEach(book -> employeeBookList.getItems().add(book.getId() + ":" + book.getBookTitle() + " - " + book.getInStock() + " in stock"));// + "(" + (book.isAvailable() ? "AVAILABLE" : "UNAVAILABLE") + ")"));      //pakeisti su inStock tikrinimu
+    }*/
+
+    public void searchBooksEmp(){
+        employeeBookList=searchBook(employeeBookList,searchBookEmpF, searchAuthorsEmpF, searchFromDateEmp, searchToDateEmp, -1);
     }
 
     public void createBook(ActionEvent event) {
@@ -508,7 +525,7 @@ public class BookShopWindow implements Initializable {
             ClearCreateFields();
         }
 
-        loadBooks();
+        searchBooksEmp();
     }
 
     public void editBook() {
@@ -535,10 +552,9 @@ public class BookShopWindow implements Initializable {
 
     public void deleteBook() {
         String bookId = employeeBookList.getSelectionModel().getSelectedItem().toString().split(":")[0];
-
         //if(bookId==null){alertMsg("This book is unavailable.","It was removed.");} bezsmyslena bo id ne null, nu potem pa etym id ne naxodit
             bookHibernateCtrl.removeBook(Integer.parseInt(bookId));
-            loadBooks();
+        searchBooksEmp();
 
     }
 
@@ -628,7 +644,7 @@ public class BookShopWindow implements Initializable {
 
             bookHibernateCtrl.updateBook(currentBook);
             refresh();
-            loadBooks();
+            searchBooksEmp();
         }
     }
 
@@ -654,16 +670,16 @@ public class BookShopWindow implements Initializable {
 
     }
 
+
     //---------------------------------EMPLOYEE TAB LOGIC END----------------------------------------------------------//
 
 
 
     //---------------------------------CUSTOMER TAB LOGIC START----------------------------------------------------------//
 
-    public void searchBook() {
-        List<Book> filteredBooks = bookHibernateCtrl.getFilteredBooks(searchBookF.getText(), searchFromDate.getValue(), searchToDate.getValue(), searchAuthorsF.getText());
-        allBooksClient.getItems().clear();
-        filteredBooks.forEach(book -> allBooksClient.getItems().add(book.getId() + ":" + book.getBookTitle()));
+    public void searchBooksCust(){
+        ClearViewFields();
+        allBooksClient=searchBook(allBooksClient,searchBookCustF, searchAuthorsCustF, searchFromDateCust, searchToDateCust,0);
     }
 
     public void viewBookInfo(){
@@ -751,10 +767,12 @@ public class BookShopWindow implements Initializable {
             List<Book> cartList = cart.getItems();
             cartList.forEach(book -> currentOrderList.getItems().add(book.getId() + ":" + book.getBookTitle()));
 
-            ClearViewFields();
+            /*ClearViewFields();
             allBooksClient.getItems().clear();
             List<Book> inStockBookList = bookHibernateCtrl.getAllBooks(0);
             inStockBookList.forEach(book -> allBooksClient.getItems().add(book.getId() + ":" + book.getBookTitle()));
+        */
+            searchBooksCust();
         }
 
     }
@@ -764,7 +782,8 @@ public class BookShopWindow implements Initializable {
 
         cart.getItems().add(currentBook);
         currentBook.setInStock(currentBook.getInStock()+1);
-        bookHibernateCtrl.updateBook(currentBook);*/
+        bookHibernateCtrl.updateBook(currentBook);
+        //eta davno byla zakamenciravana*/
         for(int j = 0; j < cart.getItems().size(); j++)
         {
             Book obj = cart.getItems().get(j);
@@ -780,10 +799,12 @@ public class BookShopWindow implements Initializable {
         List<Book> cartList = cart.getItems();
         cartList.forEach(book -> currentOrderList.getItems().add(book.getId() + ":" + book.getBookTitle()));
 
-        ClearViewFields();
+        /*ClearViewFields();
         allBooksClient.getItems().clear();
         List<Book> inStockBookList = bookHibernateCtrl.getAllBooks(0);
         inStockBookList.forEach(book -> allBooksClient.getItems().add(book.getId() + ":" + book.getBookTitle()));
+    */
+        searchBooksCust();
     }
 
     private void addTreeItem(Comment comment, TreeItem parent) {
