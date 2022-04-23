@@ -209,6 +209,76 @@ public class BookShopWindow implements Initializable {
         createBookTitle.clear();
     }
 
+    private void addTreeItem(Comment comment, TreeItem parent) {
+        TreeItem<Comment> treeItem = new TreeItem<>(comment);
+        parent.getChildren().add(treeItem);
+        comment.getReplies().forEach(sub -> addTreeItem(sub, treeItem));
+    }
+
+    public void loadComments() {
+        Book currentBook = getBookById(allBooksClient.getSelectionModel().getSelectedItem().toString().split(":")[0]);
+        bookCommentTree.setRoot(new TreeItem<String>("Comments:"));
+        bookCommentTree.setShowRoot(false);
+        bookCommentTree.getRoot().setExpanded(true);
+        currentBook.getComments().forEach(comment -> addTreeItem(comment, bookCommentTree.getRoot()));
+    }
+
+    public void writeComment(ActionEvent actionEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(LoginWindow.class.getResource("../view/WriteCommentWindow.fxml"));
+        Parent parent = fxmlLoader.load();
+        WriteCommentWindow writeCommentWindow = fxmlLoader.getController();
+        writeCommentWindow.setData(parseInt(allBooksClient.getSelectionModel().getSelectedItem().toString().split(":")[0]), 0, userId);
+        Scene scene = new Scene(parent);
+        Stage stage = new Stage();
+        stage.setTitle("Comment window");
+        stage.setScene(scene);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+        loadComments();
+    }
+
+    public void editComment(ActionEvent actionEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(LoginWindow.class.getResource("../view/WriteCommentWindow.fxml"));
+        Parent parent = fxmlLoader.load();
+        WriteCommentWindow writeCommentWindow = fxmlLoader.getController();
+
+        String currentCommentId = (bookCommentTree.getSelectionModel().getSelectedItem().toString().split("\\.")[0]).replace("TreeItem [ value: ", "");
+        Comment currentComment = commentHibernateCtrl.getCommentById(parseInt(currentCommentId));
+        writeCommentWindow.setData(parseInt(currentCommentId), currentComment.getCommentText());
+
+        Scene scene = new Scene(parent);
+        Stage stage = new Stage();
+        stage.setTitle("Edit window");
+        stage.setScene(scene);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+        loadComments();
+
+    }
+
+    public void addReply(ActionEvent actionEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(LoginWindow.class.getResource("../view/WriteCommentWindow.fxml"));
+        Parent parent = fxmlLoader.load();
+        WriteCommentWindow writeCommentWindow = fxmlLoader.getController();
+        String currentCommentId = (bookCommentTree.getSelectionModel().getSelectedItem().toString().split("\\.")[0]).replace("TreeItem [ value: ", "");
+        writeCommentWindow.setData(0, parseInt(currentCommentId), userId);
+        Scene scene = new Scene(parent);
+        Stage stage = new Stage();
+        stage.setTitle("Reply window");
+        stage.setScene(scene);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+        loadComments();
+
+    }
+
+    public void deleteComment(ActionEvent actionEvent) {
+        String commentId = ((bookCommentTree.getSelectionModel().getSelectedItem().toString().split("\\.")[0]).replace("TreeItem [ value: ", ""));
+        commentHibernateCtrl.removeComment(Integer.parseInt(commentId));
+        loadComments();
+    }
+
+
     //---------------------------------ADMIN TAB LOGIC START----------------------------------------------------------//
 
     public void loadUsers() {
@@ -565,10 +635,6 @@ public class BookShopWindow implements Initializable {
             alertMsg("Publish date field is empty!","Enter publish date!");
         }
 
-        /*else if(incorrectValuesLocalDate(createBookPublishDate.getValue().toString())){
-            alertMsg("Book publish date contains incorrect characters!","Enter correct date!");
-        }*/
-
         else if(createBookPageNum.getText().isEmpty()){
             alertMsg("Book page number field is empty!","Enter page number!");
         }
@@ -768,57 +834,6 @@ public class BookShopWindow implements Initializable {
         allBooksClient.getItems().clear();
         List<Book> inStockBookList = bookHibernateCtrl.getAllBooks(0);
         inStockBookList.forEach(book -> allBooksClient.getItems().add(book.getId() + ":" + book.getBookTitle()));
-    }
-
-
-    private void addTreeItem(Comment comment, TreeItem parent) {
-        TreeItem<Comment> treeItem = new TreeItem<>(comment);
-        parent.getChildren().add(treeItem);
-        comment.getReplies().forEach(sub -> addTreeItem(sub, treeItem));
-    }
-
-    public void loadComments() {
-        Book currentBook = getBookById(allBooksClient.getSelectionModel().getSelectedItem().toString().split(":")[0]);
-        bookCommentTree.setRoot(new TreeItem<String>("Comments:"));
-        bookCommentTree.setShowRoot(false);
-        bookCommentTree.getRoot().setExpanded(true);
-        currentBook.getComments().forEach(comment -> addTreeItem(comment, bookCommentTree.getRoot()));
-    }
-
-    public void writeComment(ActionEvent actionEvent) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(LoginWindow.class.getResource("../view/WriteCommentWindow.fxml"));
-        Parent parent = fxmlLoader.load();
-        WriteCommentWindow writeCommentWindow = fxmlLoader.getController();
-        writeCommentWindow.setData(parseInt(allBooksClient.getSelectionModel().getSelectedItem().toString().split(":")[0]), 0, userId);
-        Scene scene = new Scene(parent);
-        Stage stage = new Stage();
-        stage.setTitle("Comment window");
-        stage.setScene(scene);
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.showAndWait();
-        loadComments();
-    }
-
-    public void addReply(ActionEvent actionEvent) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(LoginWindow.class.getResource("../view/WriteCommentWindow.fxml"));
-        Parent parent = fxmlLoader.load();
-        WriteCommentWindow writeCommentWindow = fxmlLoader.getController();
-        String commentId = ((bookCommentTree.getSelectionModel().getSelectedItem().toString().split("\\.")[0]).replace("TreeItem [ value: ", ""));
-        writeCommentWindow.setData(0, parseInt(commentId), userId);
-        Scene scene = new Scene(parent);
-        Stage stage = new Stage();
-        stage.setTitle("Reply window");
-        stage.setScene(scene);
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.showAndWait();
-        loadComments();
-
-    }
-
-    public void deleteComment(ActionEvent actionEvent) {
-        String commentId = ((bookCommentTree.getSelectionModel().getSelectedItem().toString().split("\\.")[0]).replace("TreeItem [ value: ", ""));
-        commentHibernateCtrl.removeComment(Integer.parseInt(commentId));
-        loadComments();
     }
 
     //---------------------------------CUSTOMER TAB LOGIC END----------------------------------------------------------//

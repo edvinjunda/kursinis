@@ -91,6 +91,7 @@
                           <items>
                             <MenuItem mnemonicParsing="false" onAction="#addReply" text="Add reply" />
                               <MenuItem mnemonicParsing="false" onAction="#deleteComment" text="Delete comment" />
+                              <MenuItem mnemonicParsing="false" onAction="#editComment" text="Edit comment" />
                           </items>
                         </ContextMenu>
                      </contextMenu>
