@@ -1,2 +1,2 @@
-# kursinis v2 web
+# kursinis-v2-web
  
