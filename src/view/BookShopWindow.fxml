@@ -85,13 +85,13 @@
                      </contextMenu></ListView>
                   <Label alignment="CENTER" contentDisplay="CENTER" layoutY="27.0" prefHeight="25.0" prefWidth="200.0" text="Book list" />
                   <Label alignment="CENTER" layoutX="599.0" layoutY="27.0" prefHeight="25.0" prefWidth="200.0" text="Cart list" />
-                  <TreeView fx:id="bookCommentTree" layoutX="200.0" layoutY="279.0" prefHeight="145.0" prefWidth="400.0">
+                  <TreeView fx:id="bookCommentTree" layoutX="200.0" layoutY="279.0" onMouseClicked="#disableCommentButtons" prefHeight="145.0" prefWidth="400.0">
                      <contextMenu>
                         <ContextMenu>
                           <items>
-                            <MenuItem mnemonicParsing="false" onAction="#addReply" text="Add reply" />
-                              <MenuItem mnemonicParsing="false" onAction="#deleteComment" text="Delete comment" />
-                              <MenuItem mnemonicParsing="false" onAction="#editComment" text="Edit comment" />
+                            <MenuItem fx:id="commentReplyButton" mnemonicParsing="false" onAction="#addReply" text="Add reply" />
+                              <MenuItem fx:id="commentDeleteButton" mnemonicParsing="false" onAction="#deleteComment" text="Delete comment" />
+                              <MenuItem fx:id="commentEditButton" mnemonicParsing="false" onAction="#editComment" text="Edit comment" />
                           </items>
                         </ContextMenu>
                      </contextMenu>
