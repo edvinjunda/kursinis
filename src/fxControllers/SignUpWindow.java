@@ -26,6 +26,8 @@ public class SignUpWindow implements Initializable {
     @FXML
     public PasswordField passwordF;
     @FXML
+    public PasswordField passwordRepeatF;
+    @FXML
     public TextField phoneNumF;
     @FXML
     public RadioButton personRadio;
@@ -58,7 +60,7 @@ public class SignUpWindow implements Initializable {
         }
 
         else if(userHibernateCtrl.getUserByLogin(loginF.getText()) != null) {
-            alertMsg("User with entered login already exists!","Change login.");
+            alertMsg("User with entered login already exists!","Enter other login.");
         }
 
         else if (loginF.getText().length()>20){
@@ -71,6 +73,10 @@ public class SignUpWindow implements Initializable {
 
         else if (passwordF.getText().length()>20){
             alertMsg("Password is too long!","Max allowed length is 20.");
+        }
+
+        else if (!passwordRepeatF.getText().equals(passwordF.getText())){
+            alertMsg("Repeated password doesn't match!","Enter the same password!");
         }
 
         else if (phoneNumF.getText().isEmpty()){

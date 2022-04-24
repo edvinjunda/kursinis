@@ -228,7 +228,7 @@ public class UserEditWindow implements Initializable {
                 }
 
                 else if (editNameF.getText().isEmpty()) {
-                    alertMsg("Surname field is empty!", "Enter surname!");
+                    alertMsg("Name field is empty!", "Enter name!");
                 }
 
                 else if (editSurnameF.getText().length() > 20) {

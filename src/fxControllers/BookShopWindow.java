@@ -30,6 +30,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -72,7 +73,14 @@ public class BookShopWindow implements Initializable {
     public TextField createBookAuthors;
 
     @FXML
-    public Button logOutButton;
+    public TextField personNameF,personSurnameF, companyTitleF, addressF, phoneNumF, loginF;
+    @FXML
+    public PasswordField passwordF, passwordRepeatF;
+    @FXML
+    public Label confirmLabel;
+    @FXML
+    public Button editUserButton, saveUserButton, cancelButton, logOutButton;
+
     @FXML
     public ListView buyerCart;
     @FXML
@@ -160,6 +168,7 @@ public class BookShopWindow implements Initializable {
         User buyer = userHibernateCtrl.getUserById(userId);
         cart=new Cart(buyer);
         fillTablesByUser();
+        loadUserInfo();
     }
 
     @FXML
@@ -210,6 +219,261 @@ public class BookShopWindow implements Initializable {
 
     private Book getBookById(String id) {
         return bookHibernateCtrl.getBookById(Integer.parseInt(id));
+    }
+
+    public void loadUserInfo(){
+        User currentUser=userHibernateCtrl.getUserById(userId);
+
+        personNameF.setEditable(false);
+        personSurnameF.setEditable(false);
+        companyTitleF.setEditable(false);
+        addressF.setEditable(false);
+        phoneNumF.setEditable(false);
+        loginF.setEditable(false);
+        passwordF.setEditable(false);
+
+        editUserButton.setDisable(false);
+
+        confirmLabel.setVisible(false);
+        passwordRepeatF.setVisible(false);
+        passwordRepeatF.clear();
+        saveUserButton.setVisible(false);
+        cancelButton.setVisible(false);
+
+        //personNameF GUI TextField box is hidden under companyTittleF GUI TextField box
+        if(currentUser.getRole()==Role.PERSON){
+            personNameF.setText(currentUser.getName());
+            personSurnameF.setText(currentUser.getSurname());
+            phoneNumF.setText(currentUser.getPhoneNum().substring(4));
+            loginF.setText(currentUser.getLogin());
+            passwordF.setText(currentUser.getPassword());
+
+            companyTitleF.setVisible(false);
+            addressF.setVisible(false);
+
+        }
+
+        else if(currentUser.getRole()==Role.COMPANY){
+            companyTitleF.setText(currentUser.getCompanyTitle());
+            addressF.setText(currentUser.getAddress());
+            phoneNumF.setText(currentUser.getPhoneNum().substring(4));
+            loginF.setText(currentUser.getLogin());
+            passwordF.setText(currentUser.getPassword());
+
+            personNameF.setVisible(false);
+            personSurnameF.setVisible(false);
+        }
+
+        else if(currentUser.getRole()==Role.EMPLOYEE||currentUser.getRole()==Role.ADMIN){
+            personNameF.setText(currentUser.getName());
+            personSurnameF.setText(currentUser.getSurname());
+            addressF.setText(currentUser.getAddress());
+            phoneNumF.setText(currentUser.getPhoneNum().substring(4));
+            loginF.setText(currentUser.getLogin());
+            passwordF.setText(currentUser.getPassword());
+
+            companyTitleF.setVisible(false);
+        }
+    }
+
+    public void editUserInfo(ActionEvent actionEvent){
+        User currentUser=userHibernateCtrl.getUserById(userId);
+
+        confirmLabel.setVisible(true);
+        passwordRepeatF.setVisible(true);
+        saveUserButton.setVisible(true);
+        editUserButton.setDisable(true);
+        cancelButton.setVisible(true);
+
+        //personNameF GUI TextField box is hidden under companyTittleF GUI TextField box
+        if(currentUser.getRole()==Role.PERSON){
+            personNameF.setEditable(true);
+            personSurnameF.setEditable(true);
+            phoneNumF.setEditable(true);
+            loginF.setEditable(true);
+            passwordF.setEditable(true);
+
+            companyTitleF.setVisible(false);
+            addressF.setVisible(false);
+
+        }
+
+        else if(currentUser.getRole()==Role.COMPANY){
+            companyTitleF.setEditable(true);
+            addressF.setEditable(true);
+            phoneNumF.setEditable(true);
+            loginF.setEditable(true);
+            passwordF.setEditable(true);
+
+            personNameF.setVisible(false);
+            personSurnameF.setVisible(false);
+        }
+
+        else if(currentUser.getRole()==Role.EMPLOYEE||currentUser.getRole()==Role.ADMIN){
+            personNameF.setEditable(true);
+            personSurnameF.setEditable(true);
+            addressF.setEditable(true);
+            phoneNumF.setEditable(true);
+            loginF.setEditable(true);
+            passwordF.setEditable(true);
+
+            companyTitleF.setVisible(false);
+        }
+    }
+
+    public void saveUserInfo(ActionEvent actionEvent){
+        User editedUser=userHibernateCtrl.getUserById(userId);
+
+        if (loginF.getText().isEmpty()) {
+            alertMsg("Login field is empty!", "Enter login!");
+        }
+
+        else if(userHibernateCtrl.getUserByLogin(loginF.getText()) != null) {
+            alertMsg("User with entered login already exists!","Enter other login.");
+        }
+
+        else if (loginF.getText().length() > 20) {
+            alertMsg("Login is too long!", "Max allowed length is 20.");
+        }
+
+        else if (passwordF.getText().isEmpty()){
+            alertMsg("Password field is empty!","Enter password!");
+        }
+
+        else if (passwordF.getText().length()>20){
+            alertMsg("Password is too long!","Max allowed length is 20.");
+        }
+
+        else if (!passwordRepeatF.getText().equals(passwordF.getText())){
+            alertMsg("Repeated password doesn't match!","Enter the same password!");
+        }
+
+        else if (phoneNumF.getText().isEmpty()) {
+            alertMsg("Phone number field is empty!", "Enter phone number!");
+        }
+
+        else if (phoneNumF.getText().length() != 8) {
+            alertMsg("Incorrect length.", "Enter 8 digits!");
+        }
+
+        else if (containsCharactersInteger(phoneNumF.getText())) {
+            alertMsg("Phone number contains characters!", "Remove all characters!");
+        }
+
+        else{
+
+            editedUser.setLogin(loginF.getText());
+            editedUser.setPassword(passwordF.getText());
+            editedUser.setPhoneNum("+370"+phoneNumF.getText());
+            editedUser.setDateModified(LocalDate.now());
+
+            if (editedUser.getRole() == Role.PERSON) {
+                if (personNameF.getText().isEmpty()) {
+                    alertMsg("Name field is empty!", "Enter name!");
+                }
+                else if (personNameF.getText().length() > 20) {
+                    alertMsg("Name is too long!", "Max allowed length is 20.");
+                }
+
+                else if (containsDigits(personNameF.getText())) {
+                    alertMsg("Name contains digits!", "Remove digits!");
+                }
+
+                else if (personSurnameF.getText().isEmpty()) {
+                    alertMsg("Surname field is empty!", "Enter surname!");
+                }
+
+                else if (personSurnameF.getText().length() > 20) {
+                    alertMsg("Surname is too long!", "Max allowed length is 20.");
+                }
+
+                else if (containsDigits(personSurnameF.getText())) {
+                    alertMsg("Surname contains digits!", "Remove digits!");
+                }
+
+                else{
+
+                    editedUser.setName(personNameF.getText());
+                    editedUser.setSurname(personSurnameF.getText());
+
+                    userHibernateCtrl.updateUser(editedUser);
+                    loadUserInfo();
+                }
+            }
+
+            else if (editedUser.getRole() == Role.COMPANY) {
+                if (companyTitleF.getText().isEmpty()) {
+                    alertMsg("Company title field is empty!", "Enter company title!");
+                }
+
+                else if (companyTitleF.getText().length() > 30) {
+                    alertMsg("Company title is too long!", "Max allowed length is 30.");
+                }
+
+                else if (addressF.getText().isEmpty()) {
+                    alertMsg("Address field is empty!", "Enter address!");
+                }
+
+                else if (addressF.getText().length() > 50) {
+                    alertMsg("Address is too long!", "Max allowed length is 50.");
+                }
+
+                else {
+                    editedUser.setCompanyTitle(companyTitleF.getText());
+                    editedUser.setAddress(addressF.getText());
+
+                    userHibernateCtrl.updateUser(editedUser);
+                    loadUserInfo();
+                }
+
+            }
+
+
+            else if (editedUser.getRole() == Role.EMPLOYEE ||editedUser.getRole() == Role.ADMIN) {
+                if (personNameF.getText().isEmpty()) {
+                    alertMsg("Name field is empty!", "Enter name!");
+                }
+                else if (personNameF.getText().length() > 20) {
+                    alertMsg("Name is too long!", "Max allowed length is 20.");
+                }
+
+                else if (containsDigits(personNameF.getText())) {
+                    alertMsg("Name contains digits!", "Remove digits!");
+                }
+
+                else if (personNameF.getText().isEmpty()) {
+                    alertMsg("Name field is empty!", "Enter name!");
+                }
+
+                else if (personSurnameF.getText().length() > 20) {
+                    alertMsg("Surname is too long!", "Max allowed length is 20.");
+                }
+
+                else if (containsDigits(personSurnameF.getText())) {
+                    alertMsg("Surname contains digits!", "Remove digits!");
+                }
+
+                else if (addressF.getText().isEmpty()) {
+                    alertMsg("Address field is empty!", "Enter address!");
+                }
+
+                else if (addressF.getText().length() > 50) {
+                    alertMsg("Address is too long!", "Max allowed length is 50.");
+                }
+
+                else {
+                    editedUser.setName(personNameF.getText());
+                    editedUser.setSurname(personSurnameF.getText());
+                    editedUser.setAddress(addressF.getText());
+
+                    userHibernateCtrl.updateUser(editedUser);
+                    loadUserInfo();
+                }
+
+            }
+
+        }
+
     }
 
     public void logOut(ActionEvent actionEvent) throws IOException {

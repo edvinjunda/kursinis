@@ -12,7 +12,6 @@ import java.util.List;
 
 @Getter
 @Setter
-//@RequiredArgsConstructor
 @Entity
 public abstract class User  implements Serializable {
     @Id
