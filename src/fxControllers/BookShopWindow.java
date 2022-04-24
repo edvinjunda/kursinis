@@ -145,6 +145,8 @@ public class BookShopWindow implements Initializable {
     private TableColumn<UserTableParameters, String> colSurname;
     @FXML
     private TableColumn<UserTableParameters, Void> actionsField;
+    @FXML
+    private ListView adminCartsInfo;
 
 
     private ObservableList<UserTableParameters> data = FXCollections.observableArrayList();
@@ -328,9 +330,12 @@ public class BookShopWindow implements Initializable {
             alertMsg("Login field is empty!", "Enter login!");
         }
 
-        else if(userHibernateCtrl.getUserByLogin(loginF.getText()) != null) {
+        /*else if(//userHibernateCtrl.getUserByLogin(loginF.getText()) != null
+                //&&
+                userHibernateCtrl.getUserByLogin(loginF.getText()).equals(userHibernateCtrl.getUserById(userId)))
+        {
             alertMsg("User with entered login already exists!","Enter other login.");
-        }
+        }*/
 
         else if (loginF.getText().length() > 20) {
             alertMsg("Login is too long!", "Max allowed length is 20.");
@@ -697,6 +702,14 @@ public class BookShopWindow implements Initializable {
             stage.showAndWait();
             loadUsers();
         }
+    }
+
+    public void loadAllCartsInfo(){
+
+        List<Cart> carts = cartHibernateCtrl.getAllCarts();
+        adminCartsInfo.getItems().clear();
+        carts.forEach(cart->buyerCart.getItems().add(cart.getId() + ":" + cart.getStatus()));
+
     }
 
     //---------------------------------ADMIN TAB LOGIC END------------------------------------------------------------//
@@ -1095,7 +1108,7 @@ public class BookShopWindow implements Initializable {
         stage.setTitle("Comment window");
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);
-        stage.show();
+        stage.showAndWait();
         loadComments();
     }
 
@@ -1136,7 +1149,33 @@ public class BookShopWindow implements Initializable {
 
     public void deleteComment(ActionEvent actionEvent) {
         String commentId = ((bookCommentTree.getSelectionModel().getSelectedItem().toString().split("\\.")[0]).replace("TreeItem [ value: ", ""));
-        commentHibernateCtrl.removeComment(Integer.parseInt(commentId));
+        Book currentBook = commentHibernateCtrl.getCommentById(Integer.parseInt(commentId)).getBookComment();
+        Comment currentComment=commentHibernateCtrl.getCommentById(Integer.parseInt(commentId));
+
+        if(currentComment.getBookComment()==null){
+            Comment tempParentComment=currentComment.getParentComment();
+            for(int i=0;i<tempParentComment.getReplies().size();i++) {
+                Comment tempComment = tempParentComment.getReplies().get(i);
+
+                if (tempComment.getId() == Integer.parseInt(commentId)) {
+                    tempParentComment.getReplies().remove(i);
+                    commentHibernateCtrl.editComment(tempParentComment);
+                    break;
+                }
+            }
+        }
+        else{
+            for(int i=0;i<currentBook.getComments().size();i++){
+                Comment tempComment=currentBook.getComments().get(i);
+
+                if(tempComment.getId()==Integer.parseInt(commentId)){
+                    currentBook.getComments().remove(i);
+                    bookHibernateCtrl.updateBook(currentBook);
+                    break;
+                }
+            }
+        }
+
         loadComments();
     }
 

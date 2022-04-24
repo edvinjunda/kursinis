@@ -73,9 +73,8 @@ public class BookHibernateCtrl {
             em.remove(book);
             em.getTransaction().commit();
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println(id+"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
-            alertMsg("This book is unavailable.","It was already removed.");
+            //e.printStackTrace();
+            alertMsg("This book can't be removed.","It was already removed or is contained in some cart.");
         } finally {
             if (em != null) {
                 em.close();

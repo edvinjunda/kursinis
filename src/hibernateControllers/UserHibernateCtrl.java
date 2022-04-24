@@ -59,7 +59,8 @@ public class UserHibernateCtrl {
             em.merge(user); //UPDATE
             em.getTransaction().commit();
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            alertMsg("User with entered login already exists!","Enter other login.");
         } finally {
             if (em != null) em.close();
         }
