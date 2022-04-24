@@ -12,7 +12,8 @@
     <children>
         <TextField fx:id="loginF" layoutX="40.0" layoutY="40.0" prefHeight="25.0" prefWidth="150.0" promptText="login" />
         <PasswordField fx:id="passwordF" layoutX="40.0" layoutY="90.0" prefHeight="25.0" prefWidth="150.0" promptText="password" />
-      <TextField fx:id="phoneNumF" layoutX="70.0" layoutY="140.0" prefHeight="25.0" prefWidth="120.0" promptText="phone number" />
+      <PasswordField fx:id="passwordRepeatF" layoutX="40.0" layoutY="140.0" prefHeight="25.0" prefWidth="150.0" promptText="password (repeat)" />
+      <TextField fx:id="phoneNumF" layoutX="70.0" layoutY="190.0" prefHeight="25.0" prefWidth="120.0" promptText="phone number" />
         <RadioButton fx:id="personRadio" layoutX="202.0" layoutY="41.0" mnemonicParsing="false" onAction="#disableFields" prefHeight="20.0" prefWidth="90.0" selected="true" text="Person">
             <toggleGroup>
                 <ToggleGroup fx:id="userType" />
@@ -25,6 +26,6 @@
         <TextField fx:id="companyAddressF" layoutX="300.0" layoutY="190.0" prefHeight="25.0" prefWidth="150.0" promptText="Company address" />
         <Button layoutX="92.0" layoutY="277.0" mnemonicParsing="false" onAction="#saveAndReturn" prefHeight="25.0" prefWidth="60.0" text="Save" />
         <Button layoutX="337.0" layoutY="277.0" mnemonicParsing="false" onAction="#returnToLogin" prefHeight="25.0" prefWidth="60.0" text="Cancel" />
-      <Label layoutX="40.0" layoutY="144.0" prefWidth="30.0" text="+370" />
+      <Label layoutX="40.0" layoutY="194.0" prefWidth="30.0" text="+370" />
     </children>
 </AnchorPane>

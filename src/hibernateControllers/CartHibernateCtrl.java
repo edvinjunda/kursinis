@@ -82,7 +82,7 @@ public class CartHibernateCtrl {
             }
         }
     }
-//criteria.setFetchMode("roles", FetchMode.EAGER);
+
     public List getAllCarts() {
         EntityManager em = getEm();
         try {

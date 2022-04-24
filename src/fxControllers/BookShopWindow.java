@@ -44,9 +44,7 @@ public class BookShopWindow implements Initializable {
     @FXML
     public TextField searchBookCustF, searchAuthorsCustF;
     @FXML
-    public DatePicker searchFromDateCust;
-    @FXML
-    public DatePicker searchToDateCust;
+    public DatePicker searchFromDateCust, searchToDateCust;
     @FXML
     public ListView<String> allBooksClient;
     @FXML
@@ -58,19 +56,11 @@ public class BookShopWindow implements Initializable {
     @FXML
     public ListView employeeBookList;
     @FXML
-    public TextField createBookTitle;
-    @FXML
     public TextArea createBookDescription;
     @FXML
     public DatePicker createBookPublishDate;
     @FXML
-    public TextField createBookPageNum;
-    @FXML
-    public TextField createBookPrice;
-    @FXML
-    public TextField createBookInStock;
-    @FXML
-    public TextField createBookAuthors;
+    public TextField createBookPageNum, createBookTitle, createBookPrice, createBookInStock, createBookAuthors;
 
     @FXML
     public TextField personNameF,personSurnameF, companyTitleF, addressF, phoneNumF, loginF;
@@ -80,44 +70,28 @@ public class BookShopWindow implements Initializable {
     public Label confirmLabel;
     @FXML
     public Button editUserButton, saveUserButton, cancelButton, logOutButton;
-
     @FXML
     public ListView buyerCart;
+
     @FXML
     public ListView employeeCartsInfo;
     @FXML
-    private Tab myAccount;
-    @FXML
-    private Tab bookShop;
-    @FXML
-    public Tab adminTools;
-    @FXML
-    public Tab employeeTools;
+    public Tab adminTools, employeeTools, employeeManageCarts;
     @FXML
     public TabPane tabPane;
     @FXML
-    public Button addBookButton;
-    @FXML
-    public Button updateBookButton;
+    public Button addBookButton, updateBookButton;
     @FXML
     TextField searchBookEmpF, searchAuthorsEmpF;
     @FXML
     DatePicker searchFromDateEmp, searchToDateEmp;
 
     @FXML
-    private TextField bookAuthorsF;
-    @FXML
     private TextArea bookDescriptionF;
     @FXML
-    private TextField bookInStockF;
-    @FXML
-    private TextField bookPageNumF;
-    @FXML
-    private TextField bookPriceF;
+    private TextField bookInStockF, bookAuthorsF, bookPageNumF, bookPriceF, bookTitleF;
     @FXML
     private DatePicker bookPublishDateF;
-    @FXML
-    private TextField bookTitleF;
     @FXML
     public ListView currentOrderList;
 
@@ -147,6 +121,12 @@ public class BookShopWindow implements Initializable {
     private TableColumn<UserTableParameters, Void> actionsField;
     @FXML
     private ListView adminCartsInfo;
+    @FXML
+    private TextField buyerId, buyerName, buyerSurname, buyerAddress, buyerCompanyTitle;
+    @FXML
+    private ComboBox cartStatus;
+    @FXML
+    private Button saveEditedCartButton, cancelCartEditButton;
 
 
     private ObservableList<UserTableParameters> data = FXCollections.observableArrayList();
@@ -171,6 +151,16 @@ public class BookShopWindow implements Initializable {
         cart=new Cart(buyer);
         fillTablesByUser();
         loadUserInfo();
+
+        if(buyer.getRole()==Role.ADMIN){
+            cartStatus.getItems().clear();
+            //cartStatus.setPromptText("Status");
+            cartStatus.getItems().addAll(
+                    Status.IN_PROGRESS,
+                    Status.SHIPPED,
+                    Status.DELIVERED,
+                    Status.CANCELED);
+        }
     }
 
     @FXML
@@ -366,7 +356,6 @@ public class BookShopWindow implements Initializable {
         }
 
         else{
-
             editedUser.setLogin(loginF.getText());
             editedUser.setPassword(passwordF.getText());
             editedUser.setPhoneNum("+370"+phoneNumF.getText());
@@ -432,7 +421,6 @@ public class BookShopWindow implements Initializable {
                 }
 
             }
-
 
             else if (editedUser.getRole() == Role.EMPLOYEE ||editedUser.getRole() == Role.ADMIN) {
                 if (personNameF.getText().isEmpty()) {
@@ -632,10 +620,10 @@ public class BookShopWindow implements Initializable {
                     public void updateItem(Void item, boolean empty) {
                         super.updateItem(item, empty);
 
-                        if (empty) //|| user.getRole()==Role.ADMIN)
+                        if (empty)
                         {
                             setGraphic(null);
-                        } else {    //cell.disabledProperty();
+                        } else {
                             HBox pane = new HBox(deleteButton, editButton);
                             setGraphic(pane);
                         }
@@ -646,7 +634,6 @@ public class BookShopWindow implements Initializable {
         };
 
         actionsField.setCellFactory(cellFactory);
-
 
         usersTable.setEditable(true);
         List<Person> persons = userHibernateCtrl.getAllPerson();
@@ -688,7 +675,6 @@ public class BookShopWindow implements Initializable {
         if(user==null){
             alertMsg("This user is unavailable.","The user was removed.");
         }
-
         else {
             FXMLLoader fxmlLoader = new FXMLLoader(BookShopWindow.class.getResource("../view/UserEditWindow.fxml"));
             Parent parent = fxmlLoader.load();
@@ -705,12 +691,63 @@ public class BookShopWindow implements Initializable {
     }
 
     public void loadAllCartsInfo(){
+        //cartStatus.setPromptText("Status");
+        cartStatus.setDisable(true);
+        saveEditedCartButton.setDisable(true);
+        cancelCartEditButton.setDisable(true);
 
         List<Cart> carts = cartHibernateCtrl.getAllCarts();
         adminCartsInfo.getItems().clear();
-        carts.forEach(cart->buyerCart.getItems().add(cart.getId() + ":" + cart.getStatus()));
-
+        carts.forEach(cart->adminCartsInfo.getItems().add(cart.getId() + ":" + cart.getStatus()));
     }
+
+    public void viewCartInfo(){
+        Cart currentCart=cartHibernateCtrl.getCartById(Integer.parseInt(adminCartsInfo.getSelectionModel().getSelectedItem().toString().split(":")[0]));
+        User buyer=currentCart.getBuyer();
+
+        //buyerName GUI TextField box is hidden under buyerCompanyTittle GUI TextField box
+        if(buyer.getRole()==Role.PERSON||buyer.getRole()==Role.EMPLOYEE||buyer.getRole()==Role.ADMIN){
+            buyerId.setText(String.valueOf(buyer.getId()));
+            buyerName.setText(buyer.getName());
+            buyerSurname.setText(buyer.getSurname());
+
+            buyerName.setVisible(true);
+            buyerSurname.setVisible(true);
+            buyerCompanyTitle.setVisible(false);
+            buyerAddress.setVisible(false);
+
+        }
+
+        else if(buyer.getRole()==Role.COMPANY){
+            buyerId.setText(String.valueOf(buyer.getId()));
+            buyerCompanyTitle.setText(buyer.getCompanyTitle());
+            buyerAddress.setText(buyer.getAddress());
+
+            buyerName.setVisible(false);
+            buyerSurname.setVisible(false);
+            buyerCompanyTitle.setVisible(true);
+            buyerAddress.setVisible(true);
+        }
+    }
+
+    public void editCart(){
+        cartStatus.setDisable(false);
+        saveEditedCartButton.setDisable(false);
+        cancelCartEditButton.setDisable(false);
+    }
+
+    public void saveEditedCart(){
+        Cart currentCart=cartHibernateCtrl.getCartById(Integer.parseInt(adminCartsInfo.getSelectionModel().getSelectedItem().toString().split(":")[0]));
+        currentCart.setStatus(Status.valueOf(cartStatus.getSelectionModel().getSelectedItem().toString()));
+        cartHibernateCtrl.updateCart(currentCart);
+
+        loadAllCartsInfo();
+    }
+
+    public void cancelCartEdit(){
+        loadAllCartsInfo();
+    }
+
 
     //---------------------------------ADMIN TAB LOGIC END------------------------------------------------------------//
 
@@ -752,10 +789,6 @@ public class BookShopWindow implements Initializable {
         else if(createBookPublishDate.getValue()==null){
             alertMsg("Publish date field is empty!","Enter publish date!");
         }
-
-        /*else if(incorrectValuesLocalDate(createBookPublishDate.getValue().toString())){
-            alertMsg("Book publish date contains incorrect characters!","Enter correct date!");
-        }*/
 
         else if(createBookPageNum.getText().isEmpty()){
             alertMsg("Book page number field is empty!","Enter page number!");
@@ -829,10 +862,8 @@ public class BookShopWindow implements Initializable {
 
     public void deleteBook() {
         String bookId = employeeBookList.getSelectionModel().getSelectedItem().toString().split(":")[0];
-        //if(bookId==null){alertMsg("This book is unavailable.","It was removed.");} bezsmyslena bo id ne null, nu potem pa etym id ne naxodit
-            bookHibernateCtrl.removeBook(Integer.parseInt(bookId));
+        bookHibernateCtrl.removeBook(Integer.parseInt(bookId));
         searchBooksEmp();
-
     }
 
     public void refresh() {
@@ -853,63 +884,48 @@ public class BookShopWindow implements Initializable {
         if(currentBook==null){
             alertMsg("This book is unavailable.","It was removed.");
         }
-
         else if(createBookTitle.getText().isEmpty()){
             alertMsg("Book title field is empty!","Enter title!");
         }
-
         else if(createBookTitle.getText().length()>20){
             alertMsg("Book title is too long!","Enter shorter title!");
         }
-
         else if(createBookAuthors.getText().isEmpty()){
             alertMsg("Book authors field is empty!","Enter authors!");
         }
-
         else if(containsDigits(createBookAuthors.getText())){
             alertMsg("Book authors contain digits!","Remove all digits!");
         }
-
         else if(createBookAuthors.getText().length()>50){
             alertMsg("Book authors character number is too high!","Enter less characters!");
         }
-
         else if(createBookPublishDate.getValue()==null){
             alertMsg("Publish date field is empty!","Enter publish date!");
         }
-
         else if(createBookPageNum.getText().isEmpty()){
             alertMsg("Book page number field is empty!","Enter page number!");
         }
-
         else if(containsCharactersInteger(createBookPageNum.getText())){
             alertMsg("Book page number contains characters!","Remove all characters!");
         }
-
         else if(createBookInStock.getText().isEmpty()){
             alertMsg("Book in stock field is empty!","Enter in stock amount!");
         }
-
         else if(containsCharactersInteger(createBookInStock.getText())){
             alertMsg("Book in stock field contains characters!","Remove all characters!");
         }
-
         else if(createBookPrice.getText().isEmpty()){
             alertMsg("Book price field is empty!","Enter price!");
         }
-
         else if(containsCharactersDouble(createBookPrice.getText())){
             alertMsg("Book price field contains characters!","Remove all characters!");
         }
-
         else if(createBookDescription.getText().isEmpty()){
             alertMsg("Book description is empty!","Write description!");
         }
-
         else if(createBookDescription.getText().length()>2550){
             alertMsg("Book description is too long!","Enter shorter description!");
         }
-
         else {
             currentBook.setBookTitle(createBookTitle.getText());
             currentBook.setDescription(createBookDescription.getText());
@@ -926,17 +942,15 @@ public class BookShopWindow implements Initializable {
     }
 
     public void loadCartsInfo(){ //dabaigti
-
-        List<Cart> carts = cartHibernateCtrl.getAllCarts();//getCartBySupervisingEmp(userHibernateCtrl.getUserById(userId));
+        List<Cart> carts = cartHibernateCtrl.getAllCarts();
         List<Cart> empCarts=new ArrayList<>();
-
 
         for(int i=0;i<carts.size();i++){
             Cart currentCart=carts.get(i);
             List<Person> currentSupervisingEmp = currentCart.getSupervisingEmployees();
             for(int j=0;j<currentSupervisingEmp.size();j++){
-                Person person=currentSupervisingEmp.get(i);
-                if(person.equals(userHibernateCtrl.getUserById(userId))){
+                Person person=currentSupervisingEmp.get(j);
+                if(person.getId()==userId||userHibernateCtrl.getUserById(userId).getRole()==Role.ADMIN){
                     empCarts.add(currentCart);
                 }
             }
@@ -944,7 +958,6 @@ public class BookShopWindow implements Initializable {
 
         employeeCartsInfo.getItems().clear();
         empCarts.forEach(cart->employeeCartsInfo.getItems().add(cart.getId() + ":" + cart.getStatus()));
-
     }
 
 
@@ -965,7 +978,6 @@ public class BookShopWindow implements Initializable {
         if(currentBook==null){
             alertMsg("This book is unavailable.","It was removed.");
         }
-
         else {
             bookTitleF.setText(currentBook.getBookTitle());
             bookAuthorsF.setText(currentBook.getAuthors());
@@ -983,7 +995,6 @@ public class BookShopWindow implements Initializable {
         if(cart.getItems().isEmpty()) {
             alertMsg("Cart is empty!","Add books to the cart.");
         }
-
         else {
             User buyer = userHibernateCtrl.getUserById(userId);
 
@@ -1017,7 +1028,6 @@ public class BookShopWindow implements Initializable {
     }
 
     public void viewCartsInfo(){
-
         List<Cart> carts = cartHibernateCtrl.getCartByBuyer(userHibernateCtrl.getUserById(userId));
         buyerCart.getItems().clear();
         carts.forEach(cart->buyerCart.getItems().add(cart.getId() + ":" + cart.getStatus()));
@@ -1030,11 +1040,9 @@ public class BookShopWindow implements Initializable {
         if(currentBook==null){
             alertMsg("This book is unavailable.","It was removed.");
         }
-
         else if(currentBook.getInStock()==0){
             alertMsg("This book is unavailable.","It is sold out.");
         }
-
         else {
             cart.getItems().add(currentBook);
             currentBook.setInStock(currentBook.getInStock()-1);
@@ -1051,7 +1059,6 @@ public class BookShopWindow implements Initializable {
         */
             searchBooksCust();
         }
-
     }
 
     public void removeFromCart(ActionEvent event){
@@ -1082,6 +1089,27 @@ public class BookShopWindow implements Initializable {
         inStockBookList.forEach(book -> allBooksClient.getItems().add(book.getId() + ":" + book.getBookTitle()));
     */
         searchBooksCust();
+    }
+
+    public void cancelCart() throws IOException {
+        Cart currentCart=cartHibernateCtrl.getCartById(Integer.parseInt(buyerCart.getSelectionModel().getSelectedItem().toString().split(":")[0]));
+
+        if(currentCart.getStatus()!=Status.IN_PROGRESS){
+            alertMsg("Cart can't be canceled!","");
+        }
+        else {
+            FXMLLoader fxmlLoader = new FXMLLoader(CartCancelWindow.class.getResource("../view/CartCancelWindow.fxml"));
+            Parent parent = fxmlLoader.load();
+            CartCancelWindow cartCancelWindow = fxmlLoader.getController();
+            cartCancelWindow.setCart(currentCart);
+            Scene scene = new Scene(parent);
+            Stage stage = new Stage();
+            stage.setTitle("Cart canceling");
+            stage.setScene(scene);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+            viewCartsInfo();
+        }
     }
 
     private void addTreeItem(Comment comment, TreeItem parent) {
@@ -1127,8 +1155,8 @@ public class BookShopWindow implements Initializable {
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
-        loadComments();
 
+        loadComments();
     }
 
     public void addReply(ActionEvent actionEvent) throws IOException {
@@ -1143,23 +1171,23 @@ public class BookShopWindow implements Initializable {
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
-        loadComments();
 
+        loadComments();
     }
 
     public void deleteComment(ActionEvent actionEvent) {
         String commentId = ((bookCommentTree.getSelectionModel().getSelectedItem().toString().split("\\.")[0]).replace("TreeItem [ value: ", ""));
         Book currentBook = commentHibernateCtrl.getCommentById(Integer.parseInt(commentId)).getBookComment();
         Comment currentComment=commentHibernateCtrl.getCommentById(Integer.parseInt(commentId));
+        Comment parentComment=currentComment.getParentComment();
 
         if(currentComment.getBookComment()==null){
-            Comment tempParentComment=currentComment.getParentComment();
-            for(int i=0;i<tempParentComment.getReplies().size();i++) {
-                Comment tempComment = tempParentComment.getReplies().get(i);
+            for(int i=0;i<parentComment.getReplies().size();i++) {
+                Comment tempComment = parentComment.getReplies().get(i);
 
                 if (tempComment.getId() == Integer.parseInt(commentId)) {
-                    tempParentComment.getReplies().remove(i);
-                    commentHibernateCtrl.editComment(tempParentComment);
+                    parentComment.getReplies().remove(i);
+                    commentHibernateCtrl.editComment(parentComment);
                     break;
                 }
             }

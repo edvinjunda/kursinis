@@ -3,6 +3,8 @@ package books;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import users.Person;
 import users.User;
 
@@ -20,9 +22,11 @@ public class Cart {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private int id;
-        @ManyToMany//(fetch = FetchType.EAGER)
+        @ManyToMany
+        @LazyCollection(LazyCollectionOption.FALSE)
         private List<Book> items;
-        @ManyToMany//(fetch = FetchType.EAGER)
+        @ManyToMany
+        @LazyCollection(LazyCollectionOption.FALSE)
         private List<Person> supervisingEmployees;
         @ManyToOne
         private User buyer;

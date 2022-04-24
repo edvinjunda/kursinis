@@ -41,14 +41,4 @@ public class IncorrectDataControl {
         }
         return false;
     }
-
-    public static boolean incorrectValuesLocalDate(String number){
-        try{
-            LocalDate.parse(String.valueOf(number));
-        }
-        catch (Exception e){
-            return true;
-        }
-        return false;
-    }
 }

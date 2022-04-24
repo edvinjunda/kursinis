@@ -6,12 +6,14 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 
@@ -27,7 +29,20 @@
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
-                                          <Button fx:id="logOutButton" layoutX="728.0" layoutY="351.0" mnemonicParsing="false" onAction="#logOut" text="Log out" />
+                                          <Button fx:id="logOutButton" layoutX="728.0" layoutY="351.0" mnemonicParsing="false" onAction="#logOut" prefWidth="60.0" text="Log out" />
+                                    <TextField fx:id="personNameF" editable="false" layoutX="16.0" layoutY="19.0" prefHeight="25.0" prefWidth="150.0" promptText="Name" />
+                                    <TextField fx:id="personSurnameF" editable="false" layoutX="16.0" layoutY="44.0" prefHeight="25.0" prefWidth="150.0" promptText="Surname" />
+                                    <TextField fx:id="companyTitleF" editable="false" layoutX="16.0" layoutY="19.0" prefHeight="25.0" prefWidth="150.0" promptText="Company title" />
+                                    <TextField fx:id="addressF" editable="false" layoutX="166.0" layoutY="19.0" prefHeight="25.0" prefWidth="150.0" promptText="Address" />
+                                    <TextField fx:id="phoneNumF" editable="false" layoutX="46.0" layoutY="70.0" prefHeight="25.0" prefWidth="120.0" promptText="phone number" />
+                                    <TextField fx:id="loginF" editable="false" layoutX="16.0" layoutY="122.0" prefHeight="25.0" prefWidth="150.0" promptText="login" />
+                                    <PasswordField fx:id="passwordF" editable="false" layoutX="16.0" layoutY="148.0" prefHeight="25.0" prefWidth="150.0" promptText="password" />
+                                    <PasswordField fx:id="passwordRepeatF" layoutX="16.0" layoutY="174.0" prefHeight="25.0" prefWidth="150.0" promptText="password (repeat)" />
+                                    <Label layoutX="16.0" layoutY="74.0" prefWidth="30.0" text="+370" />
+                                    <Button fx:id="editUserButton" layoutX="16.0" layoutY="200.0" mnemonicParsing="false" onAction="#editUserInfo" prefWidth="40.0" text="Edit" />
+                                    <Button fx:id="saveUserButton" layoutX="56.0" layoutY="200.0" mnemonicParsing="false" onAction="#saveUserInfo" prefWidth="50.0" text="Save" />
+                                    <Label fx:id="confirmLabel" layoutX="166.0" layoutY="178.0" text="Enter password again to confirm" />
+                                    <Button fx:id="cancelButton" layoutX="106.0" layoutY="200.0" mnemonicParsing="false" onAction="#loadUserInfo" prefWidth="60.0" text="Cancel" />
                                  </children>
                               </AnchorPane>
                         </content>
@@ -45,22 +60,23 @@
                     </children></AnchorPane>
             </content>
         </Tab>
-        <Tab fx:id="bookShop" onSelectionChanged="#fillTablesByUser" text="Book shop">
+        <Tab fx:id="bookShop" onSelectionChanged="#searchBooksCust" text="Book shop">
             <content>
                 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="450.0" prefWidth="800.0">
                     <children>
                         <HBox fx:id="searchBar" layoutY="1.0" prefHeight="26.0" prefWidth="600.0">
                             <children>
-                                <TextField fx:id="searchBookF" onAction="#searchBook" prefHeight="25.0" prefWidth="150.0" promptText="Book title" />
-                                <DatePicker fx:id="searchFromDate" onAction="#searchBook" prefHeight="25.0" prefWidth="150.0" promptText="Publish from" />
-                                <DatePicker fx:id="searchToDate" onAction="#searchBook" prefHeight="25.0" prefWidth="150.0" promptText="Publish to" />
-                                <TextField fx:id="searchAuthorsF" onAction="#searchBook" prefHeight="25.0" prefWidth="150.0" promptText="Authors" />
+                                <TextField fx:id="searchBookCustF" onAction="#searchBooksCust" prefHeight="25.0" prefWidth="150.0" promptText="Book title" />
+                                <TextField fx:id="searchAuthorsCustF" onAction="#searchBooksCust" prefHeight="25.0" prefWidth="150.0" promptText="Authors" />
+                                <DatePicker fx:id="searchFromDateCust" onAction="#searchBooksCust" prefHeight="25.0" prefWidth="150.0" promptText="Publish from" />
+                                <DatePicker fx:id="searchToDateCust" onAction="#searchBooksCust" prefHeight="25.0" prefWidth="150.0" promptText="Publish to" />
                             </children>
                         </HBox>
                         <ListView fx:id="allBooksClient" layoutY="51.0" onMouseClicked="#viewBookInfo" prefHeight="370.0" prefWidth="200.0">
                      <contextMenu>
                         <ContextMenu>
                           <items>
+                              <MenuItem mnemonicParsing="false" onAction="#writeComment" text="Write comment" />
                             <MenuItem mnemonicParsing="false" onAction="#addToCart" text="Add to cart" />
                           </items>
                         </ContextMenu>
@@ -83,11 +99,22 @@
                      </contextMenu></ListView>
                   <Label alignment="CENTER" contentDisplay="CENTER" layoutY="27.0" prefHeight="25.0" prefWidth="200.0" text="Book list" />
                   <Label alignment="CENTER" layoutX="599.0" layoutY="27.0" prefHeight="25.0" prefWidth="200.0" text="Cart list" />
+                  <TreeView fx:id="bookCommentTree" layoutX="200.0" layoutY="279.0" onMouseClicked="#disableCommentButtons" prefHeight="145.0" prefWidth="400.0">
+                     <contextMenu>
+                        <ContextMenu>
+                          <items>
+                            <MenuItem fx:id="commentReplyButton" mnemonicParsing="false" onAction="#addReply" text="Add reply" />
+                              <MenuItem fx:id="commentDeleteButton" mnemonicParsing="false" onAction="#deleteComment" text="Delete comment" />
+                              <MenuItem fx:id="commentEditButton" mnemonicParsing="false" onAction="#editComment" text="Edit comment" />
+                          </items>
+                        </ContextMenu>
+                     </contextMenu>
+                  </TreeView>
                     </children>
                 </AnchorPane>
             </content>
         </Tab>
-        <Tab fx:id="employeeTools" onSelectionChanged="#loadBooks" text="Employee tools">
+        <Tab fx:id="employeeTools" onSelectionChanged="#searchBooksEmp" text="Employee tools">
             <content>
                 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="450.0" prefWidth="800.0">
                     <children>
@@ -97,7 +124,7 @@
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
-                                          <ListView fx:id="employeeBookList" onMouseClicked="#refresh" prefHeight="390.0" prefWidth="300.0">
+                                          <ListView fx:id="employeeBookList" layoutY="25.0" onMouseClicked="#refresh" prefHeight="365.0" prefWidth="300.0">
                                               <contextMenu>
                                                   <ContextMenu>
                                                       <items>
@@ -109,17 +136,25 @@
                                           </ListView>
                                           <AnchorPane layoutX="300.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="390.0" prefWidth="500.0">
                                               <children>
-                                                  <TextField fx:id="createBookTitle" prefHeight="25.0" prefWidth="250.0" promptText="Enter book title" />
-                                                  <TextField fx:id="createBookAuthors" layoutX="250.0" prefHeight="25.0" prefWidth="250.0" promptText="Enter authors" />
-                                                  <DatePicker fx:id="createBookPublishDate" editable="false" layoutY="25.0" prefHeight="25.0" prefWidth="200.0" promptText="Enter publish date" />
-                                                  <TextField fx:id="createBookPageNum" layoutX="200.0" layoutY="25.0" prefHeight="26.0" prefWidth="100.0" promptText="Enter page number" />
-                                                  <TextField fx:id="createBookInStock" layoutX="300.0" layoutY="25.0" prefHeight="25.0" prefWidth="100.0" promptText="In stock" />
-                                                  <TextField fx:id="createBookPrice" layoutX="400.0" layoutY="25.0" prefHeight="25.0" prefWidth="100.0" promptText="Price" />
+                                                  <TextField fx:id="createBookTitle" layoutY="25.0" prefHeight="25.0" prefWidth="250.0" promptText="Enter book title" />
+                                                  <TextField fx:id="createBookAuthors" layoutX="250.0" layoutY="25.0" prefHeight="25.0" prefWidth="250.0" promptText="Enter authors" />
+                                                  <DatePicker fx:id="createBookPublishDate" editable="false" layoutY="50.0" prefHeight="25.0" prefWidth="200.0" promptText="Enter publish date" />
+                                                  <TextField fx:id="createBookPageNum" layoutX="200.0" layoutY="50.0" prefHeight="26.0" prefWidth="100.0" promptText="Enter page number" />
+                                                  <TextField fx:id="createBookInStock" layoutX="300.0" layoutY="50.0" prefHeight="25.0" prefWidth="100.0" promptText="In stock" />
+                                                  <TextField fx:id="createBookPrice" layoutX="400.0" layoutY="50.0" prefHeight="25.0" prefWidth="100.0" promptText="Price" />
                                                   <Button fx:id="addBookButton" layoutX="50.0" layoutY="350.0" mnemonicParsing="false" onAction="#createBook" prefHeight="25.0" prefWidth="150.0" text="Add book" />
                                                   <Button fx:id="updateBookButton" layoutX="300.0" layoutY="350.0" mnemonicParsing="false" onAction="#updateBook" prefHeight="25.0" prefWidth="150.0" text="Update book info" />
-                                                  <TextArea fx:id="createBookDescription" layoutX="50.0" layoutY="50.0" prefHeight="250.0" prefWidth="400.0" promptText="Enter book description" wrapText="true" />
+                                                  <TextArea fx:id="createBookDescription" layoutX="50.0" layoutY="75.0" prefHeight="250.0" prefWidth="400.0" promptText="Enter book description" wrapText="true" />
                                               </children>
                                           </AnchorPane>
+                                    <HBox fx:id="searchBar1" prefHeight="26.0" prefWidth="600.0">
+                                       <children>
+                                          <TextField fx:id="searchBookEmpF" onAction="#searchBooksEmp" prefHeight="25.0" prefWidth="150.0" promptText="Book title" />
+                                          <TextField fx:id="searchAuthorsEmpF" onAction="#searchBooksEmp" prefHeight="25.0" prefWidth="150.0" promptText="Authors" />
+                                          <DatePicker fx:id="searchFromDateEmp" onAction="#searchBooksEmp" prefHeight="25.0" prefWidth="150.0" promptText="Publish from" />
+                                          <DatePicker fx:id="searchToDateEmp" onAction="#searchBooksEmp" prefHeight="25.0" prefWidth="150.0" promptText="Publish to" />
+                                       </children>
+                                    </HBox>
                                  </children>
                               </AnchorPane>
                         </content>
@@ -163,7 +198,14 @@
                                         </TableView>
                                     </content>
                                 </Tab>
-                                <Tab text="Other" />
+                                <Tab onSelectionChanged="#loadAllCartsInfo" text="Manage Carts">
+                           <content>
+                              <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                                 <children>
+                                    <ListView fx:id="adminCartsInfo" prefHeight="390.0" prefWidth="200.0" />
+                                 </children>
+                              </AnchorPane>
+                           </content></Tab>
                             </tabs>
                         </TabPane>
                     </children></AnchorPane>

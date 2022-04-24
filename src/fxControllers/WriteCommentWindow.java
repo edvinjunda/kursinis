@@ -97,7 +97,8 @@ public class WriteCommentWindow {
 
         else {
                 Comment currentComment = commentHibControl.getCommentById(commentId);
-                currentComment.setCommentText("//edited//"+commentText.getText());
+                currentComment.setCommentText(commentText.getText());
+                currentComment.setEdited(true);
                 commentHibControl.editComment(currentComment);
 
             Stage stage = (Stage) saveButton.getScene().getWindow();

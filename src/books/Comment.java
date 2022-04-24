@@ -31,6 +31,7 @@ public class Comment implements Serializable {
     private Book bookComment;
     private String commenterName;
     private LocalDate datePosted;
+    private boolean edited;
 
     public Comment(String commentText, Comment parentComment, Book bookComment, LocalDate datePosted, String commenterName) {
         this.commentText = commentText;
@@ -49,6 +50,11 @@ public class Comment implements Serializable {
 
     @Override
     public String toString() {
-        return id + "." + commentText + " (" + "Posted by " +  commenterName + " on " + datePosted + ")";
+        if(edited){
+            return id + "." + commentText + " (" + "Posted by " +  commenterName + " on " + datePosted + ", 'EDITED')";
+        }
+        else {
+            return id + "." + commentText + " (" + "Posted by " +  commenterName + " on " + datePosted + ")";
+        }
     }
 }

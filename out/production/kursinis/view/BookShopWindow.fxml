@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
@@ -19,7 +20,7 @@
 
 <TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fxControllers.BookShopWindow">
     <tabs>
-        <Tab fx:id="myAccount" onSelectionChanged="#loadUserInfo" text="My account">
+        <Tab fx:id="myAccount" text="My account">
             <content>
                 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="450.0" prefWidth="800.0">
                     <children>
@@ -51,7 +52,14 @@
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
-                                    <ListView fx:id="buyerCart" prefHeight="390.0" prefWidth="200.0" />
+                                    <ListView fx:id="buyerCart" prefHeight="390.0" prefWidth="200.0">
+                                       <contextMenu>
+                                          <ContextMenu>
+                                            <items>
+                                              <MenuItem fx:id="cancelCartMenuItem" mnemonicParsing="false" onAction="#cancelCart" text="Cancel cart" />
+                                            </items>
+                                          </ContextMenu>
+                                       </contextMenu></ListView>
                                  </children></AnchorPane>
                         </content>
                       </Tab>
@@ -159,7 +167,7 @@
                               </AnchorPane>
                         </content>
                       </Tab>
-                      <Tab onSelectionChanged="#loadCartsInfo" text="Manage Carts">
+                      <Tab fx:id="employeeManageCarts" onSelectionChanged="#loadCartsInfo" text="Manage Carts">
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
@@ -198,7 +206,30 @@
                                         </TableView>
                                     </content>
                                 </Tab>
-                                <Tab text="Other" />
+                                <Tab onSelectionChanged="#loadAllCartsInfo" text="Manage Carts">
+                           <content>
+                              <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                                 <children>
+                                    <ListView fx:id="adminCartsInfo" onMouseClicked="#viewCartInfo" prefHeight="390.0" prefWidth="200.0">
+                                       <contextMenu>
+                                          <ContextMenu>
+                                            <items>
+                                              <MenuItem mnemonicParsing="false" onAction="#editCart" text="Edit cart" />
+                                            </items>
+                                          </ContextMenu>
+                                       </contextMenu>
+                                    </ListView>
+                                    <ComboBox fx:id="cartStatus" layoutX="650.0" layoutY="1.0" prefWidth="150.0" visibleRowCount="4" />
+                                    <Button fx:id="saveEditedCartButton" layoutX="666.0" layoutY="351.0" mnemonicParsing="false" onAction="#saveEditedCart" prefWidth="50.0" text="Save" />
+                                    <Button fx:id="cancelCartEditButton" layoutX="725.0" layoutY="351.0" mnemonicParsing="false" onAction="#cancelCartEdit" prefWidth="60.0" text="Cancel" />
+                                    <TextField fx:id="buyerId" editable="false" layoutX="200.0" layoutY="1.0" />
+                                    <TextField fx:id="buyerName" editable="false" layoutX="200.0" layoutY="27.0" />
+                                    <TextField fx:id="buyerSurname" editable="false" layoutX="200.0" layoutY="53.0" />
+                                    <TextField fx:id="buyerAddress" editable="false" layoutX="350.0" layoutY="1.0" />
+                                    <TextField fx:id="buyerCompanyTitle" editable="false" layoutX="200.0" layoutY="27.0" />
+                                 </children>
+                              </AnchorPane>
+                           </content></Tab>
                             </tabs>
                         </TabPane>
                     </children></AnchorPane>

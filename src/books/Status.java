@@ -1,5 +1,5 @@
 package books;
 
 public enum Status {
-    IN_PROGRESS, SHIPPED, DELIVERED
+    IN_PROGRESS, SHIPPED, DELIVERED, CANCELED
 }
