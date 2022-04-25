@@ -144,7 +144,7 @@
                     <children>
                   <TabPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="420.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
-                      <Tab text="Manage books">
+                      <Tab onSelectionChanged="#searchBooksEmp" text="Manage books">
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
@@ -223,6 +223,30 @@
                                  </children></AnchorPane>
                         </content>
                       </Tab>
+                        <Tab onSelectionChanged="#loadAllCartsInfo" text="Cart supervising employees">
+                           <content>
+                              <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                                 <children>
+                                    <ListView fx:id="cartSupervisingEmps" layoutX="150.0" layoutY="25.0" prefHeight="365.0" prefWidth="200.0" />
+                                    <HBox prefHeight="25.0" prefWidth="150.0">
+                                       <children>
+                                          <TextField fx:id="searchSupervisingCartId" onAction="#searchSupervisingCart" prefWidth="40.0" promptText="id" />
+                                          <ComboBox fx:id="searchSupervisingCartStatus" onAction="#searchSupervisingCart" prefWidth="110.0" />
+                                       </children>
+                                    </HBox>
+                                    <ListView fx:id="supervisingCartsInfo" layoutY="25.0" onMouseClicked="#loadSupervisingEmps" prefHeight="365.0" prefWidth="150.0">
+                                       <contextMenu>
+                                          <ContextMenu>
+                                            <items>
+                                              <MenuItem mnemonicParsing="false" onAction="#addCartForManaging" text="Add cart for managing" />
+                                            </items>
+                                          </ContextMenu>
+                                       </contextMenu></ListView>
+                                    <Label layoutX="207.0" layoutY="5.0" text="Cart distribution" />
+                                 </children>
+                              </AnchorPane>
+                           </content>
+                        </Tab>
                     </tabs>
                   </TabPane>
                     </children>
@@ -254,7 +278,6 @@
                                         </TableView>
                                     </content>
                                 </Tab>
-                                <Tab text="Other" />
                             </tabs>
                         </TabPane>
                     </children></AnchorPane>

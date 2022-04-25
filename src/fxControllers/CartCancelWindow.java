@@ -1,7 +1,9 @@
 package fxControllers;
 
+import books.Book;
 import books.Cart;
 import books.Status;
+import hibernateControllers.BookHibernateCtrl;
 import hibernateControllers.CartHibernateCtrl;
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
@@ -20,6 +22,8 @@ public class CartCancelWindow {
 
     EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("BookShop");
     CartHibernateCtrl cartHibernateCtrl=new CartHibernateCtrl(entityManagerFactory);
+    BookHibernateCtrl bookHibernateCtrl=new BookHibernateCtrl(entityManagerFactory);
+
 
     public void setCart(Cart cart) {
         this.cart=cart;
@@ -28,6 +32,12 @@ public class CartCancelWindow {
     public void confirmCanceling(ActionEvent actionEvent){
         cart.setStatus(Status.CANCELED);
         cartHibernateCtrl.updateCart(cart);
+
+        for(int i=0;i<cart.getItems().size();i++){
+            Book tempBook=cart.getItems().get(i);
+            tempBook.setInStock(tempBook.getInStock()+1);
+            bookHibernateCtrl.updateBook(tempBook);
+        }
 
         Stage stage = (Stage) confirmButton.getScene().getWindow();
         stage.close();
