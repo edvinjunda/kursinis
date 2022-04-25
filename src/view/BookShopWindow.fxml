@@ -52,7 +52,7 @@
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
-                                    <ListView fx:id="buyerCart" prefHeight="390.0" prefWidth="200.0">
+                                    <ListView fx:id="buyerCart" onMouseClicked="#viewBuyerCartBooks" prefHeight="390.0" prefWidth="150.0">
                                        <contextMenu>
                                           <ContextMenu>
                                             <items>
@@ -60,6 +60,22 @@
                                             </items>
                                           </ContextMenu>
                                        </contextMenu></ListView>
+                                    <ListView fx:id="buyerCartBooks" layoutX="150.0" prefHeight="390.0" prefWidth="200.0">
+                                       <contextMenu>
+                                          <ContextMenu>
+                                             <items>
+                                                <MenuItem mnemonicParsing="false" onAction="#writeComment" text="Write comment" />
+                                                <MenuItem mnemonicParsing="false" onAction="#addToCart" text="Add to cart" />
+                                             </items>
+                                          </ContextMenu>
+                                       </contextMenu>
+                                    </ListView>
+                                    <HBox layoutX="350.0" layoutY="1.0" prefHeight="25.0" prefWidth="150.0">
+                                       <children>
+                                          <TextField fx:id="searchBuyerCartId" onAction="#searchBuyerCart" prefWidth="40.0" promptText="id" />
+                                          <ComboBox fx:id="searchBuyerCartStatus" onAction="#searchBuyerCart" prefWidth="110.0" />
+                                       </children>
+                                    </HBox>
                                  </children></AnchorPane>
                         </content>
                       </Tab>
@@ -171,20 +187,39 @@
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
-                                    <ListView fx:id="employeeCartsInfo" prefHeight="390.0" prefWidth="200.0" />
-                                    <TextField fx:id="bookAuthorsF1" editable="false" layoutX="200.0" layoutY="190.0" prefHeight="25.0" prefWidth="200.0" />
-                                    <DatePicker fx:id="bookPublishDateF1" editable="false" layoutX="200.0" layoutY="190.0" prefHeight="25.0" prefWidth="150.0" />
-                                    <TextField fx:id="bookPageNumF1" editable="false" layoutX="200.0" layoutY="190.0" prefHeight="25.0" prefWidth="100.0" />
-                                    <TextField fx:id="bookInStockF1" editable="false" layoutX="200.0" layoutY="190.0" prefHeight="25.0" prefWidth="50.0" />
-                                    <TextField fx:id="bookPriceF1" editable="false" layoutX="200.0" layoutY="190.0" prefHeight="25.0" prefWidth="100.0" />
-                                    <TextArea fx:id="cartBookDescription" editable="false" layoutX="200.0" layoutY="190.0" prefHeight="200.0" prefWidth="400.0" wrapText="true" />
-                                    <TextField fx:id="bookTitleF1" editable="false" layoutX="200.0" layoutY="164.0" prefHeight="25.0" prefWidth="200.0" />
-                                    <TextField fx:id="cartBuyerId" editable="false" layoutX="200.0" layoutY="1.0" />
-                                    <TextField fx:id="buyerName1" editable="false" layoutX="200.0" layoutY="1.0" />
-                                    <TextField fx:id="buyerSurname1" editable="false" layoutX="200.0" layoutY="1.0" />
-                                    <TextField fx:id="buyerAddress1" editable="false" layoutX="200.0" layoutY="1.0" />
-                                    <TextField fx:id="buyerCompanyTitle1" editable="false" layoutX="200.0" layoutY="1.0" />
-                                    <ComboBox fx:id="cartStatus1" layoutX="649.0" layoutY="1.0" prefWidth="150.0" visibleRowCount="4" />
+                                    <TextField fx:id="buyerId" editable="false" layoutX="340.0" layoutY="1.0" />
+                                    <TextField fx:id="buyerSurname" editable="false" layoutX="340.0" layoutY="53.0" />
+                                    <TextField fx:id="buyerAddress" editable="false" layoutX="490.0" layoutY="1.0" />
+                                    <TextField fx:id="buyerCompanyTitle" editable="false" layoutX="340.0" layoutY="27.0" />
+                                    <ComboBox fx:id="cartStatus" layoutX="649.0" layoutY="1.0" prefWidth="150.0" visibleRowCount="4" />
+                                    <Button fx:id="saveEditedCartButton" layoutX="739.0" layoutY="338.0" mnemonicParsing="false" onAction="#saveEditedCart" prefWidth="60.0" text="Save" />
+                                    <Button fx:id="cancelCartEditButton" layoutX="739.0" layoutY="364.0" mnemonicParsing="false" onAction="#cancelCartEdit" prefWidth="60.0" text="Cancel" />
+                                    <ListView fx:id="employeeCartsInfo" layoutY="25.0" onMouseClicked="#viewEmpCartInfo" prefHeight="365.0" prefWidth="150.0">
+                                       <contextMenu>
+                                          <ContextMenu>
+                                             <items>
+                                                <MenuItem mnemonicParsing="false" onAction="#editCart" text="Edit cart" />
+                                             </items>
+                                          </ContextMenu>
+                                       </contextMenu>
+                                    </ListView>
+                                    <TextField fx:id="buyerName" editable="false" layoutX="340.0" layoutY="27.0" />
+                                    <ListView fx:id="empCartBooks" layoutX="150.0" layoutY="25.0" prefHeight="365.0" prefWidth="150.0">
+                                       <contextMenu>
+                                          <ContextMenu>
+                                             <items>
+                                                <MenuItem mnemonicParsing="false" onAction="#writeComment" text="Write comment" />
+                                                <MenuItem mnemonicParsing="false" onAction="#addToCart" text="Add to cart" />
+                                             </items>
+                                          </ContextMenu>
+                                       </contextMenu>
+                                    </ListView>
+                                    <HBox layoutY="1.0" prefHeight="25.0" prefWidth="150.0">
+                                       <children>
+                                          <TextField fx:id="searchCartId" onAction="#searchEmpCart" prefWidth="40.0" promptText="id" />
+                                          <ComboBox fx:id="searchCartStatus" onAction="#searchEmpCart" prefWidth="110.0" />
+                                       </children>
+                                    </HBox>
                                  </children></AnchorPane>
                         </content>
                       </Tab>
@@ -219,30 +254,7 @@
                                         </TableView>
                                     </content>
                                 </Tab>
-                                <Tab onSelectionChanged="#loadAllCartsInfo" text="Manage Carts">
-                           <content>
-                              <AnchorPane prefHeight="200.0" prefWidth="200.0">
-                                 <children>
-                                    <ListView fx:id="adminCartsInfo" onMouseClicked="#viewCartInfo" prefHeight="390.0" prefWidth="200.0">
-                                       <contextMenu>
-                                          <ContextMenu>
-                                            <items>
-                                              <MenuItem mnemonicParsing="false" onAction="#editCart" text="Edit cart" />
-                                            </items>
-                                          </ContextMenu>
-                                       </contextMenu>
-                                    </ListView>
-                                    <ComboBox fx:id="cartStatus" layoutX="650.0" layoutY="1.0" prefWidth="150.0" visibleRowCount="4" />
-                                    <Button fx:id="saveEditedCartButton" layoutX="666.0" layoutY="351.0" mnemonicParsing="false" onAction="#saveEditedCart" prefWidth="50.0" text="Save" />
-                                    <Button fx:id="cancelCartEditButton" layoutX="725.0" layoutY="351.0" mnemonicParsing="false" onAction="#cancelCartEdit" prefWidth="60.0" text="Cancel" />
-                                    <TextField fx:id="buyerId" editable="false" layoutX="200.0" layoutY="1.0" />
-                                    <TextField fx:id="buyerName" editable="false" layoutX="200.0" layoutY="27.0" />
-                                    <TextField fx:id="buyerSurname" editable="false" layoutX="200.0" layoutY="53.0" />
-                                    <TextField fx:id="buyerAddress" editable="false" layoutX="350.0" layoutY="1.0" />
-                                    <TextField fx:id="buyerCompanyTitle" editable="false" layoutX="200.0" layoutY="27.0" />
-                                 </children>
-                              </AnchorPane>
-                           </content></Tab>
+                                <Tab text="Other" />
                             </tabs>
                         </TabPane>
                     </children></AnchorPane>

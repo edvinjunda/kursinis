@@ -65,16 +65,27 @@ public class BookShopWindow implements Initializable {
     @FXML
     public TextField personNameF,personSurnameF, companyTitleF, addressF, phoneNumF, loginF;
     @FXML
+    public ListView employeeCartsInfo;
+    @FXML
+    private ListView empCartBooks;
+    @FXML
+    private TextField searchCartId;
+    @FXML
+    private ComboBox searchCartStatus;
+
+    @FXML
     public PasswordField passwordF, passwordRepeatF;
     @FXML
     public Label confirmLabel;
     @FXML
     public Button editUserButton, saveUserButton, cancelButton, logOutButton;
     @FXML
-    public ListView buyerCart;
-
+    public ListView buyerCart, buyerCartBooks;
     @FXML
-    public ListView employeeCartsInfo;
+    private TextField searchBuyerCartId;
+    @FXML
+    private ComboBox searchBuyerCartStatus;
+
     @FXML
     public Tab adminTools, employeeTools, employeeManageCarts;
     @FXML
@@ -120,8 +131,6 @@ public class BookShopWindow implements Initializable {
     @FXML
     private TableColumn<UserTableParameters, Void> actionsField;
     @FXML
-    private ListView adminCartsInfo;
-    @FXML
     private TextField buyerId, buyerName, buyerSurname, buyerAddress, buyerCompanyTitle;
     @FXML
     private ComboBox cartStatus;
@@ -152,10 +161,23 @@ public class BookShopWindow implements Initializable {
         fillTablesByUser();
         loadUserInfo();
 
-        if(buyer.getRole()==Role.ADMIN){
+        searchBuyerCartStatus.getItems().clear();
+        searchBuyerCartStatus.getItems().addAll(
+                Status.IN_PROGRESS,
+                Status.SHIPPED,
+                Status.DELIVERED,
+                Status.CANCELED);
+
+        if(buyer.getRole()==Role.EMPLOYEE||buyer.getRole()==Role.ADMIN){
             cartStatus.getItems().clear();
-            //cartStatus.setPromptText("Status");
             cartStatus.getItems().addAll(
+                    Status.IN_PROGRESS,
+                    Status.SHIPPED,
+                    Status.DELIVERED,
+                    Status.CANCELED);
+
+            searchCartStatus.getItems().clear();
+            searchCartStatus.getItems().addAll(
                     Status.IN_PROGRESS,
                     Status.SHIPPED,
                     Status.DELIVERED,
@@ -690,8 +712,7 @@ public class BookShopWindow implements Initializable {
         }
     }
 
-    public void loadAllCartsInfo(){
-        //cartStatus.setPromptText("Status");
+    /*public void loadAllCartsInfo(){
         cartStatus.setDisable(true);
         saveEditedCartButton.setDisable(true);
         cancelCartEditButton.setDisable(true);
@@ -699,55 +720,7 @@ public class BookShopWindow implements Initializable {
         List<Cart> carts = cartHibernateCtrl.getAllCarts();
         adminCartsInfo.getItems().clear();
         carts.forEach(cart->adminCartsInfo.getItems().add(cart.getId() + ":" + cart.getStatus()));
-    }
-
-    public void viewCartInfo(){
-        Cart currentCart=cartHibernateCtrl.getCartById(Integer.parseInt(adminCartsInfo.getSelectionModel().getSelectedItem().toString().split(":")[0]));
-        User buyer=currentCart.getBuyer();
-
-        //buyerName GUI TextField box is hidden under buyerCompanyTittle GUI TextField box
-        if(buyer.getRole()==Role.PERSON||buyer.getRole()==Role.EMPLOYEE||buyer.getRole()==Role.ADMIN){
-            buyerId.setText(String.valueOf(buyer.getId()));
-            buyerName.setText(buyer.getName());
-            buyerSurname.setText(buyer.getSurname());
-
-            buyerName.setVisible(true);
-            buyerSurname.setVisible(true);
-            buyerCompanyTitle.setVisible(false);
-            buyerAddress.setVisible(false);
-
-        }
-
-        else if(buyer.getRole()==Role.COMPANY){
-            buyerId.setText(String.valueOf(buyer.getId()));
-            buyerCompanyTitle.setText(buyer.getCompanyTitle());
-            buyerAddress.setText(buyer.getAddress());
-
-            buyerName.setVisible(false);
-            buyerSurname.setVisible(false);
-            buyerCompanyTitle.setVisible(true);
-            buyerAddress.setVisible(true);
-        }
-    }
-
-    public void editCart(){
-        cartStatus.setDisable(false);
-        saveEditedCartButton.setDisable(false);
-        cancelCartEditButton.setDisable(false);
-    }
-
-    public void saveEditedCart(){
-        Cart currentCart=cartHibernateCtrl.getCartById(Integer.parseInt(adminCartsInfo.getSelectionModel().getSelectedItem().toString().split(":")[0]));
-        currentCart.setStatus(Status.valueOf(cartStatus.getSelectionModel().getSelectedItem().toString()));
-        cartHibernateCtrl.updateCart(currentCart);
-
-        loadAllCartsInfo();
-    }
-
-    public void cancelCartEdit(){
-        loadAllCartsInfo();
-    }
-
+    }*/
 
     //---------------------------------ADMIN TAB LOGIC END------------------------------------------------------------//
 
@@ -762,6 +735,25 @@ public class BookShopWindow implements Initializable {
 
     public void searchBooksEmp(){
         employeeBookList=searchBook(employeeBookList,searchBookEmpF, searchAuthorsEmpF, searchFromDateEmp, searchToDateEmp, -1);
+    }
+
+    public void searchEmpCart(){
+        List<Cart> filteredCarts;
+        if(searchCartStatus.getSelectionModel().getSelectedItem()==null&&searchCartId.getText().length()==0){
+            filteredCarts = cartHibernateCtrl.getFilteredCarts(null,null);
+        }
+        else if(searchCartStatus.getSelectionModel().getSelectedItem()==null&&searchCartId.getText().length()!=0) {
+            filteredCarts = cartHibernateCtrl.getFilteredCarts(searchCartId.getText(), null);
+        }
+        else if(searchCartStatus.getSelectionModel().getSelectedItem()!=null&&searchCartId.getText().length()==0){
+            filteredCarts = cartHibernateCtrl.getFilteredCarts(null, Status.valueOf(String.valueOf(searchCartStatus.getSelectionModel().getSelectedItem())));
+        }
+        else {
+            filteredCarts = cartHibernateCtrl.getFilteredCarts(searchCartId.getText(), Status.valueOf(String.valueOf(searchCartStatus.getSelectionModel().getSelectedItem())));
+        }
+
+        employeeCartsInfo.getItems().clear();
+        filteredCarts.forEach(cart -> employeeCartsInfo.getItems().add(cart.getId() + ":" + cart.getStatus()));
     }
 
     public void createBook(ActionEvent event) {
@@ -941,24 +933,85 @@ public class BookShopWindow implements Initializable {
         }
     }
 
-    public void loadCartsInfo(){ //dabaigti
-        List<Cart> carts = cartHibernateCtrl.getAllCarts();
-        List<Cart> empCarts=new ArrayList<>();
+    public void loadCartsInfo() {
+        cartStatus.setDisable(true);
+        saveEditedCartButton.setDisable(true);
+        cancelCartEditButton.setDisable(true);
 
-        for(int i=0;i<carts.size();i++){
-            Cart currentCart=carts.get(i);
-            List<Person> currentSupervisingEmp = currentCart.getSupervisingEmployees();
-            for(int j=0;j<currentSupervisingEmp.size();j++){
-                Person person=currentSupervisingEmp.get(j);
-                if(person.getId()==userId||userHibernateCtrl.getUserById(userId).getRole()==Role.ADMIN){
-                    empCarts.add(currentCart);
+        List<Cart> carts = cartHibernateCtrl.getAllCarts();
+        List<Cart> empCarts = new ArrayList<>();
+
+        if(userHibernateCtrl.getUserById(userId).getRole() == Role.ADMIN){
+            empCarts=carts;
+        }
+
+        else {
+            for (int i = 0; i < carts.size(); i++) {
+                Cart currentCart = carts.get(i);
+                List<Person> currentSupervisingEmp = currentCart.getSupervisingEmployees();
+                for (int j = 0; j < currentSupervisingEmp.size(); j++) {
+                    Person person = currentSupervisingEmp.get(j);
+                    if (person.getId() == userId) {
+                        empCarts.add(currentCart);
+                    }
                 }
             }
         }
 
         employeeCartsInfo.getItems().clear();
-        empCarts.forEach(cart->employeeCartsInfo.getItems().add(cart.getId() + ":" + cart.getStatus()));
+        empCarts.forEach(cart -> employeeCartsInfo.getItems().add(cart.getId() + ":" + cart.getStatus()));
     }
+
+        public void viewEmpCartInfo(){
+            Cart currentCart=cartHibernateCtrl.getCartById(Integer.parseInt(employeeCartsInfo.getSelectionModel().getSelectedItem().toString().split(":")[0]));
+            User buyer=currentCart.getBuyer();
+
+            //buyerName GUI TextField box is hidden under buyerCompanyTittle GUI TextField box
+            if(buyer.getRole()==Role.PERSON||buyer.getRole()==Role.EMPLOYEE||buyer.getRole()==Role.ADMIN){
+                buyerId.setText(String.valueOf(buyer.getId()));
+                buyerName.setText(buyer.getName());
+                buyerSurname.setText(buyer.getSurname());
+
+                buyerName.setVisible(true);
+                buyerSurname.setVisible(true);
+                buyerCompanyTitle.setVisible(false);
+                buyerAddress.setVisible(false);
+
+            }
+
+            else if(buyer.getRole()==Role.COMPANY){
+                buyerId.setText(String.valueOf(buyer.getId()));
+                buyerCompanyTitle.setText(buyer.getCompanyTitle());
+                buyerAddress.setText(buyer.getAddress());
+
+                buyerName.setVisible(false);
+                buyerSurname.setVisible(false);
+                buyerCompanyTitle.setVisible(true);
+                buyerAddress.setVisible(true);
+            }
+
+            List<Book> cartBooks=currentCart.getItems();
+            empCartBooks.getItems().clear();
+            cartBooks.forEach(book -> empCartBooks.getItems().add(book.getId() + ":" + book.getBookTitle()));
+        }
+
+        public void editCart(){
+            cartStatus.setDisable(false);
+            saveEditedCartButton.setDisable(false);
+            cancelCartEditButton.setDisable(false);
+        }
+
+        public void saveEditedCart(){
+            Cart currentCart=cartHibernateCtrl.getCartById(Integer.parseInt(employeeCartsInfo.getSelectionModel().getSelectedItem().toString().split(":")[0]));
+            currentCart.setStatus(Status.valueOf(cartStatus.getSelectionModel().getSelectedItem().toString()));
+            cartHibernateCtrl.updateCart(currentCart);
+
+            loadCartsInfo();
+        }
+
+        public void cancelCartEdit(){
+            loadCartsInfo();
+        }
 
 
     //---------------------------------EMPLOYEE TAB LOGIC END----------------------------------------------------------//
@@ -970,6 +1023,48 @@ public class BookShopWindow implements Initializable {
     public void searchBooksCust(){
         ClearViewFields();
         allBooksClient=searchBook(allBooksClient,searchBookCustF, searchAuthorsCustF, searchFromDateCust, searchToDateCust,0);
+    }
+
+    public void searchBuyerCart(){
+        List<Cart> carts = cartHibernateCtrl.getCartByBuyer(userHibernateCtrl.getUserById(userId));
+        List<Cart> filteredCarts=new ArrayList<>();
+
+        if(searchBuyerCartStatus.getSelectionModel().getSelectedItem()==null&&searchBuyerCartId.getText().length()==0){
+            filteredCarts.clear();
+            filteredCarts = cartHibernateCtrl.getCartByBuyer(userHibernateCtrl.getUserById(userId));
+        }
+        else if(searchBuyerCartStatus.getSelectionModel().getSelectedItem()==null&&searchBuyerCartId.getText().length()!=0) {
+            for(int i=0;i<carts.size();i++){
+                Cart tempCart=carts.get(i);
+                if(tempCart.getId()==Integer.parseInt(searchBuyerCartId.getText())){
+                    filteredCarts.clear();
+                    filteredCarts.add(tempCart);
+                    break;
+                }
+            }
+        }
+        else if(searchBuyerCartStatus.getSelectionModel().getSelectedItem()!=null&&searchBuyerCartId.getText().length()==0){
+            filteredCarts.clear();
+            for(int i=0;i<carts.size();i++){
+                Cart tempCart=carts.get(i);
+                if(tempCart.getStatus()==Status.valueOf(String.valueOf(searchBuyerCartStatus.getSelectionModel().getSelectedItem()))){
+                    filteredCarts.add(tempCart);
+                }
+            }
+        }
+        else {
+            filteredCarts.clear();
+            for(int i=0;i<carts.size();i++){
+                Cart tempCart=carts.get(i);
+                if(tempCart.getStatus()==Status.valueOf(String.valueOf(searchBuyerCartStatus.getSelectionModel().getSelectedItem()))
+                || tempCart.getId()==Integer.parseInt(searchBuyerCartId.getText())){
+                    filteredCarts.add(tempCart);
+                }
+            }
+        }
+
+        buyerCart.getItems().clear();
+        filteredCarts.forEach(cart -> buyerCart.getItems().add(cart.getId() + ":" + cart.getStatus()));
     }
 
     public void viewBookInfo(){
@@ -989,6 +1084,20 @@ public class BookShopWindow implements Initializable {
 
             loadComments();
         }
+    }
+
+    public void viewCartsInfo(){
+        List<Cart> carts = cartHibernateCtrl.getCartByBuyer(userHibernateCtrl.getUserById(userId));
+        buyerCart.getItems().clear();
+        carts.forEach(cart->buyerCart.getItems().add(cart.getId() + ":" + cart.getStatus()));
+    }
+
+    public void viewBuyerCartBooks(){
+        Cart currentCart=cartHibernateCtrl.getCartById(Integer.parseInt(buyerCart.getSelectionModel().getSelectedItem().toString().split(":")[0]));
+        List<Book> books = currentCart.getItems();
+
+        buyerCartBooks.getItems().clear();
+        books.forEach(book->buyerCartBooks.getItems().add(book.getId()+":"+book.getBookTitle()));
     }
 
     public void createCart(ActionEvent event) {
@@ -1025,13 +1134,6 @@ public class BookShopWindow implements Initializable {
             cart=new Cart(buyer);
             currentOrderList.getItems().clear();
         }
-    }
-
-    public void viewCartsInfo(){
-        List<Cart> carts = cartHibernateCtrl.getCartByBuyer(userHibernateCtrl.getUserById(userId));
-        buyerCart.getItems().clear();
-        carts.forEach(cart->buyerCart.getItems().add(cart.getId() + ":" + cart.getStatus()));
-
     }
 
     public void addToCart(ActionEvent event) {

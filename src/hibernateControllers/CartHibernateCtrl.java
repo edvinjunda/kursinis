@@ -2,6 +2,7 @@ package hibernateControllers;
 
 import books.Book;
 import books.Cart;
+import books.Status;
 import org.springframework.transaction.annotation.Transactional;
 import users.User;
 
@@ -14,6 +15,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 
 import java.util.List;
+import java.util.Locale;
 
 import static incorrectDataControl.IncorrectDataControl.alertMsg;
 
@@ -133,13 +135,24 @@ public class CartHibernateCtrl {
         return null;
     }
 
-    /*public List getCartByEmp(int id){
+    public List getFilteredCarts(String id, Status status) {
         EntityManager em = getEm();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Cart> query = cb.createQuery(Cart.class);
             Root<Cart> root = query.from(Cart.class);
-            query.select(root).where(cb.equal(root.get("supervisingEmployees_id"),id));
+            if(id==null&&status==null){
+                query.select(root);
+            }
+            else if(id==null){
+                query.select(root).where(cb.equal(root.get("status"),status));
+            }
+            else if(status==null){
+                query.select(root).where(cb.equal(root.get("id"),Integer.parseInt(id)));
+            }
+            else{
+                query.select(root).where(cb.or(cb.equal(root.get("id"),Integer.parseInt(id)), cb.equal(root.get("status"), status)));
+            }
             Query q = em.createQuery(query);
             return q.getResultList();
         } catch (Exception e) {
@@ -150,7 +163,7 @@ public class CartHibernateCtrl {
             }
         }
         return null;
-    }*/
+    }
 
 
 }
